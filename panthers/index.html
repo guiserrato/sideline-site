@@ -1,0 +1,1893 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sideline | Panthers</title>
+  <meta name="theme-color" content="#b11f4b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Panthers">
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cp-bg); color: var(--cp-text); font: 1rem/1.4 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; }
+    a { color: var(--cp-accent); }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 2px; }
+    button:disabled { opacity: .5; cursor: default; }
+    .shell { max-width: 1600px; margin: auto; padding: 0 12px 40px; }
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 8px; min-height: 60px; margin: 0 -12px 10px; padding: 5px max(12px, env(safe-area-inset-right)) 5px max(12px, env(safe-area-inset-left)); background: var(--cp-surface); border-bottom: 1px solid var(--cp-border); }
+    .brand { flex: 0 0 44px; width: 44px; height: 44px; padding: 2px; cursor: pointer; }
+    .team-logo-tile { display: grid; place-items: center; flex: 0 0 auto; width: 54px; height: 54px; padding: 3px; overflow: hidden; border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-bg-elevated); }
+    body[data-team="golden-warriors"] .team-logo-tile { background: var(--cp-text); }
+    html[data-theme="dark"] body[data-team="golden-warriors"] .team-logo-tile { background: var(--cp-bg-elevated); }
+    .team-logo-tile img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .team-logo-tile.large { width: 88px; height: 88px; padding: 5px; }
+    .team-identity { min-width: 0; }
+    .team-identity span, .eyebrow { display: block; color: var(--cp-accent); font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .team-identity strong { display: block; font-size: .9rem; white-space: nowrap; }
+    @media (max-width: 1120px) { .team-identity { display: none; } }
+    .nav { display: flex; align-items: center; flex: 1; min-width: 0; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav button { white-space: nowrap; min-height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--cp-text-muted); padding: 7px 11px; font-size: .84rem; font-weight: 650; }
+    .nav button.active { background: var(--cp-accent-soft); color: var(--cp-accent); }
+    #top-action { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+    .top-action { flex: 0 0 auto; min-height: 40px; white-space: nowrap; }
+    #top-action .top-action { min-height: 44px; padding: 8px 12px; font-size: .83rem; }
+    h2 { margin: 0; font-size: 1.1rem; letter-spacing: -.02em; }
+    p { margin: 8px 0; }
+    .muted, .subtext, small { color: var(--cp-text-muted); }
+    .subtext { font-size: .8rem; }
+    .grid, .stack, .queue { display: grid; gap: 10px; }
+    .stack { align-content: start; }
+    .cols { grid-template-columns: minmax(0, 1.3fr) minmax(310px, .85fr); align-items: start; }
+    .game-layout { grid-template-columns: minmax(0, 1.45fr) minmax(388px, 1fr); }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 16px; padding: 12px; min-width: 0; box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-border); }
+    .card.accent { border-color: var(--cp-accent); }
+    .card.soft { background: var(--cp-bg-elevated); }
+    .home-hero { padding: 20px; }
+    .home-heading { display: flex; align-items: center; gap: 16px; }
+    .home-heading h1 { margin: 2px 0; font-size: clamp(1.4rem, 2.5vw, 2rem); letter-spacing: -.03em; line-height: 1.15; }
+    .home-heading p { margin: 0; }
+    .home-divider { height: 1px; margin: 18px 0; background: var(--cp-border); }
+    .home-hero .card-head { margin-bottom: 4px; }
+    .home-hero .actions { margin-top: 18px; }
+    .overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 16px 0; }
+    .overview div { padding: 12px 8px; border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-bg-elevated); }
+    .overview strong, .overview small { display: block; }
+    .overview strong { font-size: 1.25rem; }
+    .overview small { margin-top: 3px; font-size: .72rem; }
+    .card-head, .row, .person, .actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .card-head { margin-bottom: 10px; }
+    .row { padding: 9px 0; border-bottom: 1px solid var(--cp-border); }
+    .row:last-child { border-bottom: 0; }
+    .person { justify-content: flex-start; min-width: 0; }
+    .name { font-weight: 680; }
+    .avatar { flex: 0 0 34px; height: 34px; width: 34px; display: grid; place-items: center; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 10px; color: var(--cp-accent); font-weight: 800; font-size: .73rem; }
+    .pill { display: inline-flex; align-items: center; white-space: nowrap; padding: 5px 9px; border: 1px solid var(--cp-border); border-radius: 99px; background: var(--cp-bg-elevated); font-size: .74rem; font-weight: 650; }
+    .pill.rose { background: var(--cp-accent-soft); color: var(--cp-accent); border-color: var(--cp-highlight); }
+    .pill.warning { color: var(--cp-warning); }
+    .primary, .secondary, .quiet, .choice { min-height: 42px; border-radius: 10px; padding: 9px 14px; font-weight: 700; }
+    .primary { background: var(--cp-accent); color: var(--cp-accent-fg); border: 1px solid var(--cp-accent); }
+    .primary:hover:not(:disabled) { background: var(--cp-accent-hover); }
+    .secondary { background: var(--cp-surface); color: var(--cp-text); border: 1px solid var(--cp-border-strong); }
+    .quiet { background: transparent; border: 0; color: var(--cp-accent); padding-inline: 5px; }
+    .actions { justify-content: flex-start; flex-wrap: wrap; margin-top: 12px; }
+    .notice { padding: 12px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-bg-elevated); font-size: .84rem; }
+    .queue { gap: 4px; }
+    .queue-label { font-size: .71rem; color: var(--cp-text-muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 750; margin: 2px 0; }
+    .queue-label.bottom { text-align: right; color: var(--cp-accent); }
+    .queue-item { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 8px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-bg-elevated); }
+    .queue-item.selected, .queue-item.due { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
+    .queue-item.next { border-color: var(--cp-border-strong); }
+    .queue-item.dim { opacity: .7; }
+    .queue-item .num { color: var(--cp-text-muted); font-size: .74rem; font-weight: 800; width: 16px; flex: 0 0 16px; }
+    .queue-item .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .position-code { flex: 0 0 auto; min-width: 38px; padding: 4px 5px; border: 1px solid var(--cp-highlight); border-radius: 6px; background: var(--cp-accent-soft); color: var(--cp-accent); font-size: .88rem; font-weight: 850; text-align: center; }
+    .queue-item .quiet { min-height: 34px; font-size: .76rem; }
+    .queue-pick { width: 100%; padding: 0; text-align: left; border: 0; background: transparent; color: var(--cp-text); }
+    .queue-pick:disabled { opacity: 1; }
+    .pitch { position: relative; width: 100%; height: clamp(380px, 74dvh, 780px); overflow: hidden; border: 2px solid var(--cp-border-strong); border-radius: 10px; background: repeating-linear-gradient(0deg, var(--cp-surface-soft), var(--cp-surface-soft) 52px, var(--cp-bg-elevated) 52px, var(--cp-bg-elevated) 104px); }
+    .game-layout .pitch { height: clamp(400px, calc(100dvh - 168px), 730px); }
+    .pitch::before { content: ""; position: absolute; inset: 10px; border: 2px solid var(--cp-border-strong); border-radius: 3px; pointer-events: none; }
+    .pitch::after { content: ""; position: absolute; bottom: 10px; left: 30%; width: 40%; height: 22%; border: 2px solid var(--cp-border-strong); border-bottom: 0; pointer-events: none; }
+    .midline { position: absolute; left: 10px; right: 10px; top: 13%; border-top: 2px solid var(--cp-border-strong); }
+    .center-circle { position: absolute; top: 13%; left: 50%; width: 76px; height: 76px; transform: translate(-50%, -50%); border: 2px solid var(--cp-border-strong); border-radius: 50%; }
+    .goal { position: absolute; bottom: 0; left: 41%; right: 41%; height: 9px; background: var(--cp-border-strong); border-radius: 4px 4px 0 0; }
+    .goal::before { content: ""; position: absolute; bottom: 60px; left: 50%; width: 7px; height: 7px; border-radius: 50%; background: var(--cp-border-strong); }
+    .pitch-note { position: absolute; top: 17px; left: 19px; color: var(--cp-text-muted); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; }
+    .marker { position: absolute; z-index: 1; transform: translate(-50%, -50%); min-width: 82px; max-width: 104px; min-height: 52px; padding: 5px 7px; border: 1px solid var(--cp-accent); border-radius: 10px; background: var(--cp-surface); color: var(--cp-text); text-align: center; box-shadow: 0 1px 2px var(--cp-border); }
+    .marker b { display: block; color: var(--cp-accent); font-size: 1rem; line-height: 1.08; letter-spacing: .04em; font-weight: 850; }
+    .marker span { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .69rem; font-weight: 600; }
+    .marker.open { border-style: dashed; }
+    .marker.offered { border-width: 2px; background: var(--cp-accent-soft); box-shadow: 0 0 0 2px var(--cp-highlight); }
+    .marker.selected { background: var(--cp-accent); color: var(--cp-accent-fg); }
+    .marker.selected b { color: var(--cp-accent-fg); }
+    .marker.unavailable { opacity: .55; }
+    .pitch-mini { color: var(--cp-text-muted); font-size: .77rem; margin-top: 7px; }
+    .game-layout .field-card { padding: 10px; }
+    .game-layout .field-card .card-head { margin: 0 4px 8px; }
+    .live-rail, .draft-rail { height: clamp(500px, calc(100dvh - 80px), 815px); min-height: 0; }
+    .live-rail { display: flex; flex-direction: column; gap: 10px; }
+    .queue-panes { display: grid; grid-template-columns: minmax(0, 1.07fr) minmax(0, 1fr); gap: 8px; flex: 1; min-height: 0; }
+    .queue-panes .card { overflow-y: auto; overscroll-behavior: contain; padding: 10px; scrollbar-width: thin; }
+    .queue-panes .card-head { position: sticky; top: -10px; z-index: 2; background: var(--cp-surface); padding: 2px 0 8px; margin-bottom: 0; }
+    .queue-panes .card-head .subtext { display: none; }
+    .queue-panes .card-head h2 { font-size: .97rem; }
+    .queue-panes .card-head .pill { padding: 3px 6px; font-size: .68rem; }
+    .queue-panes .queue-item .name { font-size: .82rem; }
+    .queue-panes .queue-item { padding-block: 0; }
+    .queue-panes .queue-pick, .queue-panes .queue-item .quiet { min-height: 44px; }
+    .queue-panes .queue-item .quiet { padding-inline: 2px; }
+    .draft-rail { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .draft-scroll { display: grid; align-content: start; gap: 8px; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; scrollbar-width: thin; }
+    .draft-scroll .card { padding: 12px; }
+    .planned-scroll { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+    .planned-scroll .card { padding: 10px; }
+    .planned-scroll .card-head { margin-bottom: 4px; }
+    .planned-scroll > .card:first-child { flex: 0 0 auto; }
+    .planned-scroll > .card:nth-child(2) { flex: 0 0 auto; }
+    .planned-card { display: block; }
+    .planned-card .sub-options { padding: 4px 0 2px; }
+    .planned-rail .draft-footer { padding: 6px; }
+    .bench-picker { display: grid; align-content: start; gap: 4px; flex: 0 1 auto; min-height: 0; max-height: 208px; overflow-y: auto; scrollbar-width: thin; }
+    .bench-detail { max-height: 120px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+    .choice-grid.direct-options { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 4px; }
+    .direct-options .choice { min-height: 48px; padding: 5px 4px; text-align: center; }
+    .direct-options .choice b { color: var(--cp-accent); font-size: 1.05rem; }
+    .direct-options .choice small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .draft-footer { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 8px; background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 10px; }
+    .draft-footer .primary { flex: 1; }
+    .draft-footer button { min-height: 44px; padding-inline: 10px; font-size: .82rem; }
+    .sub-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .sub-row .queue-pick { min-height: 42px; padding: 2px 8px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-bg-elevated); }
+    .sub-row .queue-pick.active, .exit-row.active { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
+    .sub-row .queue-pick b, .sub-row .queue-pick small, .exit-row b, .exit-row small { display: block; }
+    .sub-row .queue-pick small, .exit-row small { font-size: .72rem; }
+    .sub-row .quiet { flex: 0 0 auto; min-height: 42px; }
+    .sub-row .remove-choice { flex: 0 0 44px; }
+    .exit-line { display: flex; align-items: stretch; gap: 4px; }
+    .exit-line .exit-row { flex: 1; min-width: 0; }
+    .remove-choice { display: grid; place-items: center; min-width: 44px; min-height: 44px; margin-top: 4px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-surface); color: var(--cp-accent); font-size: 1.1rem; font-weight: 700; }
+    .exit-row { display: block; width: 100%; min-height: 42px; margin-top: 4px; padding: 3px 9px; text-align: left; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-bg-elevated); color: var(--cp-text); }
+    .exit-row:disabled { opacity: 1; cursor: default; }
+    .exit-row.used { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
+    .exit-row.swap { border-style: dashed; border-color: var(--cp-border-strong); }
+    .sub-options { padding: 10px 0 6px; }
+    .sub-options .choice-grid { margin-top: 6px; }
+    .dialog-backdrop { position: fixed; z-index: 12; inset: 0; display: grid; place-items: center; padding: 16px; background: var(--cp-overlay); }
+    .dialog-card { width: min(100%, 430px); padding: 20px; border: 1px solid var(--cp-border-strong); border-radius: 16px; background: var(--cp-surface); box-shadow: var(--cp-shadow); }
+    .dialog-card .actions { justify-content: flex-end; }
+    .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+    .choice { min-height: 54px; text-align: left; border: 1px solid var(--cp-border); background: var(--cp-bg-elevated); color: var(--cp-text); }
+    .choice.active { background: var(--cp-accent-soft); border-color: var(--cp-accent); color: var(--cp-accent); }
+    .choice.active small { color: var(--cp-accent); }
+    .choice:disabled { opacity: .65; cursor: not-allowed; }
+    .choice b, .choice small { display: block; }
+    .choice .position-choice { display: flex; align-items: center; gap: 7px; min-width: 0; }
+    .position-choice .choice-player { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .choice small { font-weight: 400; font-size: .73rem; }
+    .swap-card { padding: 12px; border: 1px solid var(--cp-accent); background: var(--cp-accent-soft); border-radius: 10px; margin-bottom: 8px; }
+    .swap-card strong { display: block; }
+    .pending-choice { display: flex; align-items: stretch; gap: 4px; margin-bottom: 8px; }
+    .pending-choice .swap-card { flex: 1; min-width: 0; margin-bottom: 0; }
+    .pending-choice .remove-choice { margin-top: 0; }
+    .timeline { border-left: 2px solid var(--cp-border); margin-left: 10px; padding-left: 18px; }
+    .entry { position: relative; padding: 0 0 22px; }
+    .entry::before { content: ""; position: absolute; left: -24px; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--cp-accent); }
+    .saved-game { padding: 12px 0; border-bottom: 1px solid var(--cp-border); }
+    .saved-game summary { cursor: pointer; font-weight: 700; }
+    .form-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+    input[type=text], input[type=password], select { min-height: 42px; min-width: 0; padding: 8px 10px; background: var(--cp-bg-elevated); color: var(--cp-text); border: 1px solid var(--cp-border-strong); border-radius: 10px; }
+    input[type=text], input[type=password] { width: 100%; }
+    .divider { border: 0; border-top: 1px solid var(--cp-border); margin: 16px 0; }
+    .tags { display: flex; gap: 7px; flex-wrap: wrap; margin: 12px 0; }
+    .toast { position: fixed; z-index: 10; bottom: 22px; left: 50%; transform: translateX(-50%); max-width: calc(100% - 32px); padding: 11px 16px; border-radius: 10px; background: var(--cp-text); color: var(--cp-surface); box-shadow: var(--cp-shadow); }
+    .hidden { display: none; }
+    @media (max-width: 900px) {
+      .game-layout { grid-template-columns: 1fr; }
+      .live-rail, .draft-rail { height: auto; }
+      .queue-panes { min-height: 460px; }
+      .draft-scroll { overflow: visible; }
+      .planned-scroll > .card { flex: none; min-height: 0 !important; max-height: none !important; overflow: visible; }
+      .planned-card { display: block; }
+      .bench-picker { max-height: 260px; }
+      .bench-detail { max-height: none; overflow: visible; }
+      .draft-footer { position: sticky; bottom: 0; z-index: 3; }
+    }
+    @media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) {
+      .shell { padding-bottom: 24px; }
+      .two { grid-template-columns: 1fr; }
+      .topbar { gap: 4px; padding-inline: max(6px, env(safe-area-inset-left)) max(6px, env(safe-area-inset-right)); }
+      .home-heading { gap: 12px; }
+      .team-logo-tile.large { width: 72px; height: 72px; }
+      .nav button[data-screen="home"] { display: none; }
+      .nav button { min-height: 44px; padding-inline: 6px; font-size: .76rem; }
+      #top-action .top-action { padding-inline: 7px; font-size: .78rem; }
+      .pitch, .game-layout .pitch { height: clamp(340px, 63dvh, 560px); }
+      .queue-panes { grid-template-columns: 1fr; min-height: 0; }
+      .queue-panes .card { overflow: visible; }
+      .queue-panes .card-head { position: static; }
+      .marker { min-width: 58px; max-width: 74px; min-height: 48px; padding: 5px 2px; }
+      .marker span { font-size: .61rem; }
+      .marker b { font-size: .84rem; }
+    }
+    #app-shell[hidden], #unlock[hidden] { display: none; }
+    .unlock-wrap { width: min(100%, 440px); margin: 12vh auto; padding: 24px; }
+    .unlock-brand { display: flex; align-items: center; gap: 14px; }
+    .unlock-brand h1 { margin: 2px 0; font-size: 1.55rem; letter-spacing: -.03em; }
+    .unlock-wrap form { display: grid; gap: 12px; margin-top: 16px; }
+    .unlock-wrap input { min-height: 48px; }
+    .unlock-error { color: var(--cp-danger); }
+  </style>
+</head>
+<body data-team="panthers">
+  <div id="unlock" class="shell" hidden>
+    <section class="card unlock-wrap"><div class="unlock-brand">
+      <span class="team-logo-tile"><img src="logo.png" alt="" width="54" height="54"></span>
+      <div><span class="eyebrow">Sideline / Team access</span><h1>Panthers</h1></div>
+    </div>
+      <p>Enter this team's password to unlock its roster on this device.</p>
+      <form id="unlock-form"><label for="password">Team password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <button class="primary" type="submit">Unlock team</button></form>
+      <p id="unlock-status" class="unlock-error" role="alert"></p>
+      <a href="../">Coach home</a>
+    </section>
+  </div>
+  <div id="app-shell" class="shell" hidden>
+    <header class="topbar"><button class="brand team-logo-tile" data-screen="home" aria-label="Team home"><img src="logo.png" alt="" width="44" height="44"></button>
+      <div class="team-identity"><span>Sideline</span><strong>Panthers</strong></div>
+      <nav class="nav" id="nav" aria-label="App screens"></nav><div id="top-action"></div></header>
+    <main id="app"></main>
+  </div>
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script>
+    const teamInfo = { slug: "panthers", name: "Panthers" };
+    let initialPositions = [];
+    let positions = [];
+    let initialPlayers = [];
+    let fieldPositions = [];
+    const screens = [["home", "Home"], ["game", "Game"], ["setup", "Setup"], ["history", "History"]];
+    const state = {
+      screen: "home", team: teamInfo.name, players: [], positionLayout: [],
+      arrivalOrder: [], notReady: new Set(),
+      assignments: Object.fromEntries(positions.map((pos) => [pos.code, null])),
+      fieldQueue: [], benchQueue: [],
+      gameStarted: false, draft: null, selected: null, round: 0, half: 1,
+      events: [], undoStack: [], savedGames: []
+    };
+    const $ = (id) => document.getElementById(id);
+    let database;
+    let unlocked = false;
+    let offlineError;
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(`sideline-${teamInfo.slug}`, 1);
+        request.onupgradeneeded = () => request.result.createObjectStore("values");
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+    function readValue(key) {
+      return new Promise((resolve, reject) => {
+        const request = database.transaction("values").objectStore("values").get(key);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+    function writeValue(key, value) {
+      return new Promise((resolve, reject) => {
+        const transaction = database.transaction("values", "readwrite");
+        transaction.objectStore("values").put(value, key);
+        transaction.oncomplete = resolve;
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+      });
+    }
+    function saveGame() {
+      if (!unlocked) return;
+      writeValue("game", state).catch((error) =>
+        notify(`Could not save this game on this device: ${error.message}`));
+    }
+    function decodeBase64(value) {
+      return Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
+    }
+    async function decryptRoster(password) {
+      const response = await fetch("roster.enc.json");
+      if (!response.ok) throw new Error(`Roster download failed (${response.status}).`);
+      const payload = await response.json();
+      if (payload.version !== 1 || payload.kdf !== "PBKDF2-SHA-256" ||
+          payload.iterations !== 210000) throw new Error("Unsupported roster format.");
+      const base = await crypto.subtle.importKey(
+        "raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+      const key = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", hash: "SHA-256", salt: decodeBase64(payload.salt),
+          iterations: payload.iterations },
+        base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+      const plaintext = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: decodeBase64(payload.iv) }, key, decodeBase64(payload.data));
+      const roster = JSON.parse(new TextDecoder().decode(plaintext));
+      if (roster.name !== teamInfo.name || !Array.isArray(roster.players) ||
+          !roster.players.every((name) => typeof name === "string" && name.trim()) ||
+          !validPositions(roster.positions)) {
+        throw new Error("Roster data is invalid.");
+      }
+      return roster;
+    }
+    function validPositions(layout) {
+      return Array.isArray(layout) && layout.length > 1 && layout[0]?.code === "GK" &&
+        layout.every((pos) => pos && /^[A-Z][A-Z0-9]*$/.test(pos.code) &&
+          typeof pos.display === "string" && /^[A-Z][A-Z0-9]*$/.test(pos.display) &&
+          typeof pos.label === "string" && pos.label.trim() &&
+          Number.isFinite(pos.x) && pos.x >= 0 && pos.x <= 100 &&
+          Number.isFinite(pos.y) && pos.y >= 0 && pos.y <= 100) &&
+        new Set(layout.map((pos) => pos.code)).size === layout.length;
+    }
+    function previousLayout(assignments) {
+      const old = [
+        ["GK", "Goalkeeper", 50, 88], ["LB", "Left back", 15, 70],
+        ["LCB", "Left center back", 38, 73], ["RCB", "Right center back", 62, 73],
+        ["RB", "Right back", 85, 70], ["LM", "Left mid", 17, 49],
+        ["CM", "Center mid", 50, 48], ["RM", "Right mid", 83, 49],
+        ["LW", "Left wing", 19, 29], ["ST", "Striker", 50, 27],
+        ["RW", "Right wing", 81, 29]
+      ].map(([code, label, x, y]) => ({ code, display: code, label, x, y }));
+      return Object.keys(assignments).join("|") === old.map((pos) => pos.code).join("|")
+        ? old : null;
+    }
+    async function unlockTeam(password) {
+      try {
+        const roster = await decryptRoster(password);
+        const saved = await readValue("game");
+        if (saved && (!Array.isArray(saved.players) || !(saved.notReady instanceof Set) ||
+            !Array.isArray(saved.savedGames) || !saved.assignments ||
+            !Array.isArray(saved.arrivalOrder))) {
+          throw new Error("Saved game data is invalid; it has not been overwritten.");
+        }
+        initialPlayers = roster.players;
+        initialPositions = roster.positions;
+        const active = Boolean(saved?.gameStarted || saved?.arrivalOrder.length || saved?.draft);
+        positions = active ? saved.positionLayout || previousLayout(saved.assignments) || (
+          Object.keys(saved.assignments).join("|") === initialPositions.map((pos) => pos.code).join("|")
+            ? initialPositions : null) : initialPositions;
+        if (!validPositions(positions) || active &&
+            Object.keys(saved.assignments).join("|") !== positions.map((pos) => pos.code).join("|")) {
+          throw new Error("Saved game uses an unsupported position layout; it has not been overwritten.");
+        }
+        fieldPositions = positions.filter((pos) => pos.code !== "GK");
+        if (saved) {
+          Object.assign(state, saved);
+          state.positionLayout = positions;
+          state.players = [...initialPlayers,
+            ...state.players.filter((name) => !initialPlayers.includes(name))];
+          if (!active) {
+            state.players = [...initialPlayers];
+            state.assignments = Object.fromEntries(positions.map((pos) => [pos.code, null]));
+          }
+        } else {
+          state.players = [...initialPlayers];
+          state.positionLayout = positions;
+          state.assignments = Object.fromEntries(positions.map((pos) => [pos.code, null]));
+        }
+        state.team = teamInfo.name;
+        await writeValue("password", password);
+        unlocked = true;
+        $("unlock").hidden = true;
+        $("app-shell").hidden = false;
+        render();
+        if (offlineError) notify(offlineError);
+      } catch (error) {
+        $("unlock-status").textContent = error.name === "OperationError"
+          ? "Password did not unlock this team." : error.message;
+        $("unlock").hidden = false;
+      }
+    }
+    async function boot() {
+      $("unlock").hidden = false;
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch((error) => {
+          const message = `Offline installation is unavailable: ${error.message}`;
+          offlineError = message;
+          if (unlocked) notify(message);
+          else $("unlock-status").textContent = message;
+        });
+      }
+      try {
+        database = await openDatabase();
+        const password = await readValue("password");
+        if (password) await unlockTeam(password);
+      } catch (error) {
+        $("unlock-status").textContent = `Device storage is unavailable: ${error.message}`;
+      }
+    }
+    const esc = (value) => String(value).replace(/[&<>"']/g, (char) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+    const avatar = (name) => `<span class="avatar">${esc(name.slice(0, 2).toUpperCase())}</span>`;
+    const button = (text, action, kind = "secondary", extra = "") =>
+      `<button class="${kind}" data-action="${action}" ${extra}>${text}</button>`;
+    const cloneLineup = (lineup) => ({
+      assignments: { ...lineup.assignments },
+      fieldQueue: [...lineup.fieldQueue],
+      benchQueue: [...lineup.benchQueue]
+    });
+    const posFor = (assignments, player) =>
+      Object.keys(assignments).find((code) => assignments[code] === player) || "";
+    const displayFor = (code) => positions.find((pos) => pos.code === code)?.display || code;
+    const labelFor = (code) => positions.find((pos) => pos.code === code)?.label || code;
+    const openFieldPositions = (assignments) =>
+      fieldPositions.filter((pos) => !assignments[pos.code]).map((pos) => pos.code);
+    const readyBench = (lineup) => lineup.benchQueue.filter((player) => !state.notReady.has(player));
+    const originalBench = () => state.draft?.base.benchQueue || [];
+    const chosenEntrants = () => {
+      const seen = new Set();
+      return state.draft?.operations.filter((op) => {
+        if (!op.position ||
+            !originalBench().includes(op.player) || seen.has(op.player)) return false;
+        seen.add(op.player);
+        return true;
+      }) || [];
+    };
+    const pendingLineupWaiting = (lineup) => new Set([
+      ...state.draft.base.fieldQueue, state.draft.base.assignments.GK,
+      ...chosenEntrants().map((op) => op.player)
+    ].filter((player) => player && lineup.benchQueue.includes(player)));
+    function rememberChange() {
+      state.undoStack.push({
+        lineup: cloneLineup(state), players: [...state.players],
+        arrivalOrder: [...state.arrivalOrder], notReady: new Set(state.notReady),
+        round: state.round, half: state.half,
+        gameStarted: state.gameStarted, events: [...state.events]
+      });
+    }
+    function notify(message) {
+      const el = $("toast"); el.textContent = message; el.classList.remove("hidden");
+      clearTimeout(notify.timeout); notify.timeout = setTimeout(() => el.classList.add("hidden"), 3200);
+    }
+    function go(screen) {
+      state.screen = screen; render(); window.scrollTo({ top: 0, behavior: "instant" });
+    }
+    function newGame() {
+      if ((state.gameStarted || state.arrivalOrder.length || state.draft) &&
+          !window.confirm(state.gameStarted
+            ? "Start a new game? The current game will be saved, but unfinished choices will be discarded."
+            : "Start a new game? Unconfirmed setup choices will be discarded.")) return;
+      archiveGame();
+      resetGame();
+      go("setup");
+    }
+    function archiveGame() {
+      if (!state.gameStarted && !state.events.length) return;
+      state.savedGames.unshift({
+        id: crypto.randomUUID(), savedAt: new Date().toISOString(),
+        half: state.half, round: state.round, events: [...state.events],
+        assignments: { ...state.assignments }, players: [...state.arrivalOrder],
+        positions: [...positions]
+      });
+    }
+    function resetGame() {
+      positions = initialPositions;
+      fieldPositions = positions.filter((pos) => pos.code !== "GK");
+      state.positionLayout = positions;
+      state.players = [...initialPlayers];
+      state.arrivalOrder = []; state.notReady.clear();
+      state.gameStarted = false; state.draft = null; state.selected = null;
+      state.assignments = Object.fromEntries(positions.map((pos) => [pos.code, null]));
+      state.fieldQueue = []; state.benchQueue = []; state.half = 1; state.round = 0;
+      state.events = []; state.undoStack = [];
+    }
+    function startLineup() {
+      if (state.gameStarted || state.draft) return;
+      state.draft = {
+        kind: "starting", base: cloneLineup(state), keeper: null, operations: [], skipped: new Set()
+      };
+      syncStartingDraft();
+      state.selected = null;
+      go("game");
+    }
+    function syncStartingDraft() {
+      if (state.draft?.kind !== "starting") return;
+      if (state.draft.keeper && !state.arrivalOrder.includes(state.draft.keeper)) {
+        state.draft.keeper = null;
+      }
+      state.draft.base = cloneLineup(state);
+      state.draft.operations = state.draft.operations.filter((op) =>
+        state.arrivalOrder.includes(op.player) && op.player !== state.draft.keeper);
+      for (const player of state.draft.skipped) {
+        if (!state.arrivalOrder.includes(player)) state.draft.skipped.delete(player);
+      }
+      state.selected = null;
+    }
+    function syncDraftRoster(removed) {
+      if (!state.draft) return;
+      if (state.draft.kind === "starting") {
+        const before = state.draft.operations.length;
+        syncStartingDraft();
+        if (state.draft.operations.length !== before) notify("A choice for the removed player was cleared.");
+        removePendingChoice(-1);
+        return;
+      }
+      if (state.draft.kind === "planned") {
+        state.draft.base = cloneLineup(state);
+        const cleared = reconcilePlanned({ excludedPlayer: removed });
+        if (cleared) notify(`${cleared} pending choice${cleared === 1 ? "" : "s"} cleared after roster changed.`);
+        return;
+      }
+      const priorAssignments = state.draft.base.assignments;
+      state.draft.base = cloneLineup(state);
+      if (state.draft.kind === "halftime" && !state.draft.base.assignments.GK) {
+        state.draft.restOutgoingKeeper = false;
+      }
+      if (state.draft.fieldOrder) {
+        state.draft.fieldOrder = state.draft.fieldOrder.filter((player) =>
+          state.draft.base.fieldQueue.includes(player));
+      }
+      if (removed) {
+        if (state.draft.kind === "halftime" && state.draft.keeper === removed) {
+          state.draft.keeper = null;
+          state.draft.restOutgoingKeeper = false;
+          state.draft.operations = [];
+          state.selected = null;
+          notify("Goalkeeper candidate left; halftime choices were cleared.");
+          return;
+        }
+        if (state.draft.keeper === removed) state.draft.keeper = null;
+      }
+      const pending = state.draft.operations;
+      state.draft.operations = [];
+      const lineup = preview();
+      let cleared = 0;
+      for (const op of pending) {
+        const current = posFor(lineup.assignments, op.player);
+        const playing = lineup.fieldQueue.includes(op.player) ||
+          lineup.assignments.GK === op.player;
+        const present = playing || lineup.benchQueue.includes(op.player);
+        const valid = present && op.player !== removed &&
+          (!removed || priorAssignments[op.position] !== removed) &&
+          (op.type !== "bench" || playing) &&
+          (op.expectedPosition === undefined || current === op.expectedPosition) &&
+          (op.expectedOccupant === undefined ||
+            lineup.assignments[op.position] === op.expectedOccupant) &&
+          (op.wasField === undefined || Boolean(current) === op.wasField) &&
+          (!op.position || positions.some((pos) => pos.code === op.position)) &&
+          (op.position !== "GK" || op.type === "replacement" || !lineup.assignments.GK ||
+            lineup.assignments.GK === op.player) &&
+          (state.draft.kind !== "halftime" || !keeperNeedsChoice() ||
+            op.player === state.draft.base.assignments.GK) &&
+          (!["planned", "halftime"].includes(state.draft.kind) ||
+            !state.draft.base.benchQueue.includes(op.player) || playing ||
+            (chosenEntrants().length < groupSize() &&
+              (!lineup.assignments[op.position] ||
+                dueOut().includes(lineup.assignments[op.position]))));
+        if (!valid) { cleared++; continue; }
+        applyOperation(lineup, op);
+        state.draft.operations.push(op);
+      }
+      if (cleared) notify(`${cleared} pending choice${cleared === 1 ? "" : "s"} cleared after roster changed.`);
+      state.selected = state.draft.kind === "lineup" && state.selected &&
+        state.arrivalOrder.includes(state.selected) ? state.selected : null;
+      if (state.draft.kind === "lineup" && state.draft.targetPosition &&
+          state.draft.base.assignments[state.draft.targetPosition]) {
+        state.draft.targetPosition = null;
+        state.draft.operations = [];
+      }
+      state.draft.outgoingEdit = null;
+    }
+    function beginDraft(kind) {
+      if (state.draft) { notify("Save and Close or discard the current draft first."); return; }
+      if (!state.gameStarted) { notify("Finish assigning the starting lineup first."); return; }
+      if (kind === "planned" && !readyBench(state).length) {
+        notify("Mark a bench player ready before planning a substitution."); return;
+      }
+      state.draft = { kind, base: cloneLineup(state), keeper: null, operations: [] };
+      if (kind === "planned") {
+        state.draft.fieldOrder = [...state.fieldQueue];
+        state.draft.exitChanges = [];
+      }
+      if (kind === "halftime") state.draft.restOutgoingKeeper = false;
+      state.selected = null;
+      go("game");
+    }
+    function groupSize() {
+      const ready = readyBench(state.draft.base).filter((player) =>
+        player !== state.draft.keeper).length;
+      if (state.draft.kind === "halftime") {
+        const outgoingKeeper = state.draft.base.assignments.GK &&
+          !state.draft.restOutgoingKeeper ? 1 : 0;
+        const entrants = ready + outgoingKeeper;
+        const group = entrants > fieldPositions.length / 2 ? Math.ceil(entrants / 2) : entrants;
+        return Math.max(0, group - outgoingKeeper);
+      }
+      return ready > fieldPositions.length / 2 ? Math.ceil(ready / 2) : ready;
+    }
+    function eligibleBench() {
+      if (!state.draft || state.draft.kind === "starting") return [];
+      const ready = readyBench(state.draft.base).filter((player) =>
+        state.draft.kind !== "halftime" || player !== state.draft.keeper);
+      if (state.draft.kind === "lineup") {
+        const waiting = pendingLineupWaiting(preview());
+        return state.draft.base.benchQueue.filter((player) => !waiting.has(player));
+      }
+      if (state.draft.kind === "planned" || state.draft.kind === "halftime") return ready;
+      return ready.slice(0, groupSize());
+    }
+    function nextBench(lineup) {
+      if (["planned", "halftime"].includes(state.draft.kind) &&
+          chosenEntrants().length >= groupSize()) return null;
+      return eligibleBench().find((player) => lineup.benchQueue.includes(player)) || null;
+    }
+    function dueOut() {
+      if (!state.draft || !["planned", "halftime"].includes(state.draft.kind)) return [];
+      const keeperNeedsFieldSpot = state.draft.kind === "halftime" &&
+        state.draft.base.assignments.GK &&
+        !state.draft.restOutgoingKeeper &&
+        state.draft.base.benchQueue.includes(state.draft.keeper);
+      const vacancies = openFieldPositions(state.draft.base.assignments).length +
+        (state.draft.kind === "halftime" &&
+          (!state.draft.base.assignments.GK || state.draft.restOutgoingKeeper) &&
+          state.draft.base.fieldQueue.includes(state.draft.keeper) ? 1 : 0);
+      const count = Math.max(0, groupSize() + (keeperNeedsFieldSpot ? 1 : 0) - vacancies);
+      if (!count) return [];
+      return (state.draft.fieldOrder || state.draft.base.fieldQueue)
+        .filter((player) => player !== state.draft.keeper)
+        .slice(-count).reverse();
+    }
+    function planReconciliation({
+      excludedPlayer = null, excludedOperation = -1, excludedExit = -1, waitingPlayer = null
+    } = {}) {
+      const draft = state.draft;
+      const exits = draft.exitChanges.filter((_, index) => index !== excludedExit);
+      const fieldOrder = [...draft.base.fieldQueue];
+      const exitChanges = [];
+      const canceled = [];
+      const notReady = new Set(state.notReady);
+      if (waitingPlayer) notReady.add(waitingPlayer);
+      const ready = draft.base.benchQueue.filter((player) => !notReady.has(player)).length;
+      const size = ready > fieldPositions.length / 2 ? Math.ceil(ready / 2) : ready;
+      const exitCount = Math.max(0, size - openFieldPositions(draft.base.assignments).length);
+      const offered = () => exitCount ? fieldOrder.slice(-exitCount).reverse() : [];
+      for (const change of exits) {
+        const current = offered();
+        const from = fieldOrder.indexOf(change.outgoing);
+        const to = fieldOrder.indexOf(change.replacement);
+        if (from < 0 || to < 0 || !current.includes(change.outgoing) ||
+            current.includes(change.replacement)) {
+          canceled.push({ type: "exit", change }); continue;
+        }
+        [fieldOrder[from], fieldOrder[to]] = [fieldOrder[to], fieldOrder[from]];
+        exitChanges.push(change);
+      }
+      const operations = [];
+      const lineup = cloneLineup(draft.base);
+      lineup.fieldQueue = [...fieldOrder];
+      for (const [index, op] of draft.operations.entries()) {
+        if (index === excludedOperation || op.player === excludedPlayer) continue;
+        const current = posFor(lineup.assignments, op.player);
+        const occupant = lineup.assignments[op.position];
+        const entering = draft.base.benchQueue.includes(op.player) && !current &&
+          op.type !== "bench";
+        const chosen = new Set(operations.filter((choice) =>
+          choice.position && draft.base.benchQueue.includes(choice.player))
+          .map((choice) => choice.player));
+        const valid = (current || lineup.benchQueue.includes(op.player)) &&
+          (op.type !== "bench" || current) &&
+          (op.type === "bench" || (positions.some((pos) => pos.code === op.position) &&
+            (op.expectedOccupant === undefined || occupant === op.expectedOccupant) &&
+            (op.wasField === undefined || Boolean(current) === op.wasField) &&
+            (op.position !== "GK" || !occupant || occupant === op.player))) &&
+          (!entering || (!notReady.has(op.player) &&
+            chosen.size < size && (!occupant || offered().includes(occupant))));
+        if (!valid) { canceled.push({ type: "operation", op }); continue; }
+        applyOperation(lineup, op);
+        operations.push(op);
+      }
+      return { fieldOrder, exitChanges, operations, canceled };
+    }
+    function reconcilePlanned(options = {}) {
+      const draft = state.draft;
+      const result = planReconciliation(options);
+      draft.fieldOrder = result.fieldOrder;
+      draft.exitChanges = result.exitChanges;
+      draft.operations = result.operations;
+      state.selected = null;
+      draft.selectionPaused = false;
+      draft.outgoingEdit = null;
+      return result.canceled.length;
+    }
+    function removePendingChoice(index) {
+      const draft = state.draft;
+      const skipped = draft.kind === "starting" ? new Set(draft.skipped) : null;
+      const pending = draft.operations.filter((_, i) => i !== index);
+      draft.operations = [];
+      const lineup = preview();
+      let cleared = 0;
+      for (const op of pending) {
+        const current = posFor(lineup.assignments, op.player);
+        const occupant = lineup.assignments[op.position];
+        const present = current || lineup.fieldQueue.includes(op.player) ||
+          lineup.benchQueue.includes(op.player);
+        const entering = !current && draft.base.benchQueue.includes(op.player) &&
+          op.type !== "bench";
+        const valid = present && (op.type === "bench"
+          ? current && (op.expectedPosition === undefined || current === op.expectedPosition)
+          : positions.some((pos) => pos.code === op.position) &&
+            (op.expectedOccupant === undefined || occupant === op.expectedOccupant) &&
+            (op.wasField === undefined || Boolean(current) === op.wasField) &&
+            (op.position !== "GK" || !occupant || occupant === op.player) &&
+            !(draft.kind === "halftime" && keeperNeedsChoice() &&
+              op.player !== draft.base.assignments.GK) &&
+            (!entering || draft.kind !== "halftime" || (chosenEntrants().length < groupSize() &&
+              (!occupant || dueOut().includes(occupant))))) &&
+          (draft.kind !== "starting" || op.player !== draft.keeper);
+        if (!valid) {
+          cleared++;
+          continue;
+        }
+        applyOperation(lineup, op);
+        draft.operations.push(op);
+      }
+      if (skipped) {
+        draft.skipped = new Set([...skipped].filter((player) =>
+          draft.operations.some((op) => op.type === "bench" && op.player === player)));
+      }
+      state.selected = null;
+      render();
+      if (cleared) notify(`${cleared} dependent choice${cleared === 1 ? "" : "s"} also cleared.`);
+    }
+    function applyOperation(lineup, op) {
+      const current = posFor(lineup.assignments, op.player);
+      if (op.type === "bench") {
+        if (!current) throw new Error(`${op.player} is not on the field`);
+        lineup.assignments[current] = null;
+        lineup.fieldQueue = lineup.fieldQueue.filter((player) => player !== op.player);
+        lineup.benchQueue.push(op.player);
+        return `${op.player} → Bench · ${displayFor(current)} opens`;
+      }
+      const occupant = lineup.assignments[op.position];
+      if (current === op.position) return `${op.player} keeps ${displayFor(op.position)}`;
+      if (op.position === "GK") {
+        if (occupant && op.type !== "replacement") throw new Error("Goalkeeper position is occupied");
+        if (current) {
+          lineup.assignments[current] = null;
+          lineup.fieldQueue = lineup.fieldQueue.filter((player) => player !== op.player);
+        } else {
+          lineup.benchQueue = lineup.benchQueue.filter((player) => player !== op.player);
+        }
+        if (occupant) lineup.benchQueue.push(occupant);
+        lineup.assignments.GK = op.player;
+        return `${op.player} → ${occupant || "GK"} · GK${current ? ` · ${displayFor(current)} opens` : ""}`;
+      }
+      if (current && current !== "GK") {
+        lineup.assignments[current] = occupant;
+        lineup.assignments[op.position] = op.player;
+        return occupant
+          ? `${op.player} ↔ ${occupant} · ${displayFor(current)} / ${displayFor(op.position)}`
+          : `${op.player} → Open · ${displayFor(op.position)}`;
+      }
+      if (current === "GK") lineup.assignments.GK = null;
+      else if (!lineup.fieldQueue.includes(op.player)) {
+        if (!lineup.benchQueue.includes(op.player)) throw new Error(`${op.player} is not on the bench`);
+        lineup.benchQueue = lineup.benchQueue.filter((player) => player !== op.player);
+      } else if (state.draft?.kind !== "halftime") {
+        throw new Error(`${op.player} has no assigned field position`);
+      }
+      if (occupant) {
+        lineup.fieldQueue = lineup.fieldQueue.filter((player) => player !== occupant);
+        lineup.benchQueue.push(occupant);
+      }
+      if (!lineup.fieldQueue.includes(op.player)) {
+        if (state.draft?.kind === "starting") lineup.fieldQueue.push(op.player);
+        else lineup.fieldQueue.unshift(op.player);
+      }
+      lineup.assignments[op.position] = op.player;
+      return `${op.player} → ${occupant || "Open"} · ${displayFor(op.position)}`;
+    }
+    function preview() {
+      const lineup = cloneLineup(state.draft?.base || state);
+      if (state.draft?.fieldOrder) lineup.fieldQueue = [...state.draft.fieldOrder];
+      const descriptions = [];
+      if (state.draft?.kind === "starting" && state.draft.keeper) {
+        lineup.benchQueue = lineup.benchQueue.filter((player) => player !== state.draft.keeper);
+        descriptions.push(`${state.draft.keeper} → GK`);
+        lineup.assignments.GK = state.draft.keeper;
+      }
+      if (state.draft?.kind === "halftime" && state.draft.keeper) {
+        const oldKeeper = lineup.assignments.GK;
+        const vacated = posFor(lineup.assignments, state.draft.keeper);
+        lineup.assignments.GK = state.draft.keeper;
+        if (vacated) lineup.assignments[vacated] = null;
+        if (lineup.benchQueue.includes(state.draft.keeper)) {
+          lineup.benchQueue = lineup.benchQueue.filter((player) => player !== state.draft.keeper);
+        } else {
+          lineup.fieldQueue = lineup.fieldQueue.filter((player) => player !== state.draft.keeper);
+        }
+        descriptions.push(`${state.draft.keeper} → GK${vacated ? ` · ${vacated} opens` : " · from bench"}`);
+        if (oldKeeper) {
+          if (state.draft.restOutgoingKeeper) {
+            lineup.benchQueue.push(oldKeeper);
+            descriptions.push(`${oldKeeper} → Bench · Waiting`);
+          } else {
+            lineup.fieldQueue.unshift(oldKeeper);
+          }
+        }
+      }
+      for (const op of state.draft?.operations || []) descriptions.push(applyOperation(lineup, op));
+      if (state.draft?.kind === "halftime" && state.draft.keeper) {
+        const oldKeeper = state.draft.base.assignments.GK;
+        if (oldKeeper && lineup.fieldQueue.includes(oldKeeper)) {
+          lineup.fieldQueue = [oldKeeper, ...lineup.fieldQueue.filter((player) => player !== oldKeeper)];
+        }
+      }
+      return { ...lineup, descriptions };
+    }
+    function keeperNeedsChoice() {
+      return state.draft?.kind === "halftime" && state.draft.keeper &&
+        state.draft.base.assignments.GK &&
+        !state.draft.restOutgoingKeeper &&
+        !state.draft.operations.some((op) => op.player === state.draft.base.assignments.GK);
+    }
+    function nextStarter(lineup) {
+      if (lineup.fieldQueue.length >= fieldPositions.length) return null;
+      return state.draft.base.benchQueue.find((player) =>
+        lineup.benchQueue.includes(player) && !state.notReady.has(player) &&
+        !state.draft.skipped.has(player));
+    }
+    function selectedPlayer(lineup) {
+      if (!state.draft) return null;
+      if (state.draft.kind === "starting") {
+        return state.selected && (lineup.fieldQueue.includes(state.selected) ||
+          lineup.benchQueue.includes(state.selected))
+          ? state.selected : nextStarter(lineup);
+      }
+      if (state.draft.kind === "halftime" && !state.draft.keeper) return null;
+      if (keeperNeedsChoice()) return state.draft.base.assignments.GK;
+      if (state.draft.kind === "planned" && state.draft.selectionPaused) return null;
+      if (state.selected &&
+          (lineup.fieldQueue.includes(state.selected) ||
+           lineup.assignments.GK === state.selected ||
+           (eligibleBench().includes(state.selected) && lineup.benchQueue.includes(state.selected)))) {
+        return state.selected;
+      }
+      if (state.draft.kind === "planned" || state.draft.kind === "halftime") {
+        return nextBench(lineup);
+      }
+      return null;
+    }
+    function optionsFor(lineup, player) {
+      if (!state.draft || !player) return [];
+      if (state.draft.kind === "starting") {
+        const current = posFor(lineup.assignments, player);
+        return fieldPositions.filter((pos) => pos.code !== current &&
+          (current || lineup.fieldQueue.length < fieldPositions.length) &&
+          (current || !lineup.assignments[pos.code])).map((pos) => pos.code);
+      }
+      if (keeperNeedsChoice() && player === state.draft.base.assignments.GK) {
+        const offered = dueOut();
+        return fieldPositions.filter((pos) =>
+          (!lineup.assignments[pos.code] && lineup.fieldQueue.length <= fieldPositions.length) ||
+          offered.includes(lineup.assignments[pos.code])).map((pos) => pos.code);
+      }
+      if (lineup.fieldQueue.includes(player) || lineup.assignments.GK === player) {
+        const current = posFor(lineup.assignments, player);
+        return [
+          ...fieldPositions.filter((pos) => pos.code !== current).map((pos) => pos.code),
+          ...(!lineup.assignments.GK && state.draft.kind === "lineup" ? ["GK"] : [])
+        ];
+      }
+      if (!eligibleBench().includes(player) || !lineup.benchQueue.includes(player)) return [];
+      if (["planned", "halftime"].includes(state.draft.kind) &&
+          chosenEntrants().length >= groupSize()) return [];
+      const offered = dueOut();
+      return [
+        ...fieldPositions.filter((pos) =>
+          (!lineup.assignments[pos.code] && lineup.fieldQueue.length < fieldPositions.length) ||
+          (state.draft.kind === "lineup" && lineup.assignments[pos.code]) ||
+          (state.draft.kind !== "lineup" && offered.includes(lineup.assignments[pos.code])))
+          .map((pos) => pos.code),
+        ...(state.draft.kind === "lineup" ? ["GK"] : [])
+      ];
+    }
+    function canConfirm(lineup) {
+      if (!state.draft) return false;
+      const { kind, operations, keeper } = state.draft;
+      if (kind === "lineup" && operations.length !== 1) return false;
+      if (kind === "halftime" && (!keeper || keeperNeedsChoice())) return false;
+      if (kind !== "starting" && kind !== "halftime" && !operations.length &&
+          !(kind === "planned" && state.draft.fieldOrder.some((name, index) =>
+            name !== state.draft.base.fieldQueue[index]))) return false;
+      const assigned = Object.values(lineup.assignments).filter(Boolean);
+      const playing = [...lineup.fieldQueue, ...(lineup.assignments.GK ? [lineup.assignments.GK] : [])];
+      const accounted = [...playing, ...lineup.benchQueue];
+      return lineup.fieldQueue.length <= fieldPositions.length &&
+        assigned.length === playing.length &&
+        assigned.length === new Set(assigned).size &&
+        playing.every((player) => assigned.includes(player)) &&
+        accounted.length === state.arrivalOrder.length &&
+        new Set(accounted).size === accounted.length &&
+        accounted.every((player) => state.arrivalOrder.includes(player));
+    }
+    function queue(lineup, side, interactive = false) {
+      const list = side === "field" ? lineup.fieldQueue : lineup.benchQueue;
+      const ready = readyBench(state).length;
+      const count = ready > fieldPositions.length / 2 ? Math.ceil(ready / 2) : ready;
+      const exits = Math.max(0, count - openFieldPositions(lineup.assignments).length);
+      const due = state.draft ? dueOut() : exits ? state.fieldQueue.slice(-exits) : [];
+      const next = !state.draft ? readyBench(state).slice(0, count) : [];
+      const active = selectedPlayer(lineup);
+      const pendingWaiting = state.draft?.kind === "lineup" ? pendingLineupWaiting(lineup) : new Set();
+      return `<div class="queue-label">${side === "field" ? "TOP · LAST OFF" : "TOP · FIRST CHOICE"}</div>
+        <div class="queue">${list.map((name, i) => {
+          const waiting = side === "bench" && (state.notReady.has(name) || pendingWaiting.has(name));
+          const skipped = side === "bench" && state.draft?.kind === "starting" &&
+            state.draft.skipped.has(name);
+          const comingOff = side === "bench" && state.draft &&
+            !state.draft.base.benchQueue.includes(name);
+          const isDue = side === "field" && due.includes(name);
+          const canSelect = side === "field" ? interactive &&
+            (!keeperNeedsChoice() || name === state.draft.base.assignments.GK) :
+            interactive && (!waiting || !state.draft || state.draft.kind === "lineup") &&
+              (!state.draft || (state.draft.kind === "starting"
+                ? name === nextStarter(lineup) : eligibleBench().includes(name))) &&
+              (!state.draft || ["lineup", "starting"].includes(state.draft.kind) ||
+                (["planned", "halftime"].includes(state.draft.kind)
+                  ? chosenEntrants().length < groupSize() : name === nextBench(lineup))) &&
+              !(state.draft?.kind === "halftime" && !state.draft.keeper) && !keeperNeedsChoice();
+          const canChangeReadiness = side === "bench" && !comingOff &&
+            state.draft?.kind !== "lineup" &&
+            (state.draft?.kind === "starting" || !chosenEntrants().length);
+          return `<div class="queue-item ${isDue ? "due" : ""} ${next.includes(name) && side === "bench" ? "next" : ""}
+            ${waiting || comingOff || skipped ? "dim" : ""} ${active === name ? "selected" : ""}">
+            <span class="num">${i + 1}</span>
+            ${side === "field" ? `<span class="position-code">${esc(displayFor(posFor(lineup.assignments, name)) || "—")}</span>` : ""}
+            <button class="queue-pick name" data-select="${esc(name)}"
+              ${side === "field" ? `aria-label="${esc(labelFor(posFor(lineup.assignments, name)) || "Field")} · ${esc(name)}"` : ""}
+              ${canSelect ? "" : "disabled"}>${esc(name)}</button>
+            ${side === "field" ? "" :
+              skipped ? `<button class="quiet" data-resume="${esc(name)}">Include</button>` :
+              canChangeReadiness ? `<button class="quiet" data-ready="${esc(name)}">${waiting ? "Ready" : "Wait"}</button>` :
+              waiting ? `<span class="pill warning">${comingOff ? "Waiting on save" : "Waiting"}</span>` :
+              comingOff ? '<span class="pill">Coming off</span>' : ""}
+          </div>`;
+        }).join("") || `<div class="notice">${side === "bench" ? "No bench players checked in." : "No field players assigned."}</div>`}
+        ${side === "field" && !state.draft ? openFieldPositions(lineup.assignments).map((code) =>
+          `<div class="queue-item"><span class="num"></span>
+            <span class="position-code">${displayFor(code)}</span>
+            <button class="queue-pick name" data-position="${code}" aria-label="Open ${esc(labelFor(code))} position">Open</button>
+            <span class="subtext">${esc(labelFor(code))}</span></div>`).join("") : ""}</div>
+        <div class="queue-label bottom">${side === "field" ? "BOTTOM · NEXT OUT" : "BOTTOM · LAST CHOICE"}</div>`;
+    }
+    function pitch(lineup) {
+      const selected = selectedPlayer(lineup);
+      const available = optionsFor(lineup, selected);
+      return `<div class="pitch"><span class="pitch-note">Attacking ↑</span>
+        <div class="midline"></div><div class="center-circle"></div><div class="goal"></div>
+        ${positions.map((pos) => {
+          const name = lineup.assignments[pos.code];
+          const isOption = available.includes(pos.code);
+          const canPickPlayer = name && (!state.draft ||
+            ["starting", "lineup"].includes(state.draft.kind) ||
+            (state.draft.kind === "planned" &&
+              state.draft.base.benchQueue.includes(name) && lineup.fieldQueue.includes(name)));
+          return `<button class="marker ${name ? "" : "open"} ${isOption ||
+            state.draft?.kind === "lineup" && state.draft.targetPosition === pos.code ? "offered" : ""}
+            ${selected === name ? "selected" : ""}
+            ${state.draft && !isOption && !canPickPlayer ? "unavailable" : ""}"
+            style="left:${pos.x}%;top:${pos.y}%" data-position="${pos.code}"
+            title="${esc(pos.label)}: ${esc(name || "Open")}"
+            ${state.draft && !isOption && !canPickPlayer ? "disabled" : ""}>
+            <b>${pos.display}</b><span>${esc(name || "Open")}</span></button>`;
+        }).join("")}</div>`;
+    }
+    function home() {
+      return `<div class="grid cols"><div class="stack">
+        <section class="card accent home-hero"><div class="home-heading">
+          <span class="team-logo-tile large"><img src="logo.png" alt="" width="88" height="88"></span>
+          <div><span class="eyebrow">Team workspace</span><h1>${esc(state.team)}</h1>
+            <p class="subtext">${positions.length}v${positions.length} · ${initialPlayers.length} players</p></div>
+        </div><div class="home-divider"></div>
+          <div class="card-head"><h2>${state.gameStarted ? "Current game" : "Ready for kickoff"}</h2>
+            <span class="pill rose">${state.gameStarted ? `Half ${state.half} · Round ${state.round}` : "Setup"}</span></div>
+          <p class="muted">${state.gameStarted ? "Your lineup is saved on this device. Pick up where you left off." :
+            "Check in today's players and choose a starting lineup."}</p>
+          <div class="actions">${button(state.gameStarted || state.draft ? "Open game →" : "Continue setup →",
+            state.gameStarted || state.draft ? "game" : "setup", "primary")}</div></section>
+        <section class="card"><h2>New game</h2><p class="muted">Check in players in Setup as they arrive; assign field positions and goalkeeper on the Game screen.</p>
+          ${button("New game →", "new-game")}</section>
+      </div><section class="card"><div class="card-head"><h2>At a glance</h2></div>
+        <div class="overview"><div><strong>${positions.length}v${positions.length}</strong><small>Field</small></div>
+          <div><strong>${initialPlayers.length}</strong><small>Roster</small></div>
+          <div><strong>${state.savedGames.length}</strong><small>Saved games</small></div></div>
+        <p class="muted">Game changes and temporary players stay on this device. Published roster updates arrive with the site.</p>
+        <a href="../">← Coach home</a>
+      </section></div>`;
+    }
+    function setup() {
+      const present = state.arrivalOrder;
+      const ordered = present.filter((player) => player !== state.draft?.keeper);
+      const editable = !state.gameStarted && (!state.draft || state.draft.kind === "starting");
+      return `<div class="grid cols"><section class="card"><div class="card-head"><h2>Players here today</h2><span class="pill">${present.length} here</span></div>
+        <div class="grid two">${state.players.map((name) => `<div class="row">
+          <div class="person">${avatar(name)}<div><span class="name">${esc(name)}</span>
+            ${state.gameStarted && present.includes(name) ? `<div class="subtext">${esc(displayFor(posFor(state.assignments, name)) || "Bench")}</div>` : ""}</div></div>
+          <button class="${present.includes(name) ? "primary" : "secondary"}" data-attendance="${esc(name)}"
+            aria-label="${present.includes(name) ? "Mark" : "Check in"} ${esc(name)}${present.includes(name) ? " not here" : ""}"
+            aria-pressed="${present.includes(name)}">${present.includes(name) ? "Here" : "Not here"}</button>
+        </div>`).join("")}</div>
+        <hr class="divider"><form id="add-player" class="form-row"><input type="text" name="player"
+          aria-label="Temporary player name" placeholder="Temporary player name" maxlength="40" required>
+          <button class="secondary" type="submit">Add player</button></form>
+        <div class="notice" style="margin-top:12px">${state.gameStarted
+          ? "Adding a player puts them on the bench. Removing a field player opens their position; assign someone else on Game."
+            : "Everyone starts Not here. Check in arrivals here, even while choosing positions on Game."}</div>
+      </section><div class="stack"><section class="card"><div class="card-head"><h2>${state.gameStarted ? "Field queue" : "Starting order"}</h2><span class="pill">${positions.length}v${positions.length}</span></div>
+        <p class="muted">${state.gameStarted ? "Field and bench assignments are made on Game." :
+          "Checked-in players choose in arrival order. Choose the goalkeeper on Game whenever you're ready."}</p>
+        <div class="subtext">Goalkeeper: ${esc(state.draft?.keeper || state.assignments.GK || "Not chosen yet")}</div>
+        ${editable ? `<div class="stack" style="margin-top:12px">${ordered.length ? ordered.slice(0, fieldPositions.length).map((player, i) =>
+          `<div class="queue-item"><span class="num">${i + 1}</span><span class="name">${esc(player)}</span>
+            <button class="quiet" data-move="${esc(player)}" ${i === 0 ? "disabled" : ""} aria-label="Move ${esc(player)} earlier">↑</button></div>`).join("") :
+            '<div class="notice">No field players checked in yet.</div>'}</div>
+          ${ordered.length > fieldPositions.length ? `<div class="subtext" style="margin-top:12px">Bench at kickoff, in order: ${ordered.slice(fieldPositions.length).map(esc).join(", ")}</div>` : ""}` :
+          `<div style="margin-top:12px">${queue(state, "field")}</div>`}
+        <div class="actions">${editable && !state.draft
+          ? button("Choose starting positions →", "start-lineup", "primary")
+          : button("Back to Game →", "game", "primary")}</div>
+      </section><section class="card soft"><h2>Positions for this game</h2>
+        <div class="tags">${positions.map((pos) => `<span class="pill">${pos.display}</span>`).join("")}</div>
+        <div class="notice">This team currently uses the ${positions.length}v${positions.length} position layout.</div>
+      </section></div></div>`;
+    }
+    function livePanel(lineup) {
+      return `<aside class="live-rail">
+        <div class="queue-panes">
+          <section class="card"><div class="card-head"><h2>Field queue</h2>
+            <span class="pill rose">Next ↓</span></div>${queue(lineup, "field", true)}</section>
+          <section class="card"><div class="card-head"><h2>Bench queue</h2>
+            <span class="pill">Next ↑</span></div>${queue(lineup, "bench", true)}</section>
+        </div>
+      </aside>`;
+    }
+    function plannedPanel(lineup) {
+      const draft = state.draft;
+      const selected = selectedPlayer(lineup);
+      const due = dueOut();
+      const open = openFieldPositions(draft.base.assignments);
+      const picked = chosenEntrants();
+      const options = selected ? optionsFor(lineup, selected) : [];
+      const position = selected ? posFor(lineup.assignments, selected) : "";
+      const choosing = selected && draft.base.benchQueue.includes(selected) &&
+        lineup.benchQueue.includes(selected);
+      const direct = choosing ? options.filter((code) => !lineup.assignments[code] ||
+        due.includes(lineup.assignments[code])) : options;
+      const swaps = draft.operations.map((op, index) => {
+        if (!op.wasField || op.type === "bench") return null;
+        const fieldPlayer = draft.base.fieldQueue.includes(op.player) ? op.player :
+          draft.base.fieldQueue.includes(op.expectedOccupant) ? op.expectedOccupant : null;
+        const current = fieldPlayer && posFor(lineup.assignments, fieldPlayer);
+        const previous = fieldPlayer && posFor(draft.base.assignments, fieldPlayer);
+        return current && current !== previous ? { fieldPlayer, current, previous, index } : null;
+      }).filter(Boolean);
+      const chooser = (name) => {
+        const operation = picked.find((op) => op.player === name);
+        const position = posFor(lineup.assignments, name);
+        const out = operation?.expectedOccupant;
+        const canPick = !state.notReady.has(name) &&
+          (position || picked.length < groupSize());
+        return `<div class="sub-row">
+          <button class="queue-pick ${selected === name ? "active" : ""}" data-sub-player="${esc(name)}"
+            data-assigned="${Boolean(position)}" ${canPick ? "" : "disabled"}
+            aria-pressed="${selected === name}">
+            <b>${esc(name)}${position ? ` · ${esc(displayFor(position))}` : ""}</b>
+            <small>${position ? `For ${esc(out || "open spot")}` :
+              state.notReady.has(name) ? "Waiting · not choosing" :
+              picked.length >= groupSize() ? "Next group" : "Tap to choose a position"}</small></button>
+          ${!operation ? `<button class="quiet" data-ready="${esc(name)}">${state.notReady.has(name) ? "Ready" : "Wait"}</button>` : ""}
+          ${operation ? `<button class="remove-choice" data-remove-sub="${esc(name)}"
+            aria-label="Cancel ${esc(name)}'s substitution">×</button>` : ""}
+        </div>`;
+      };
+      const selectedOptions = selected && draft.base.benchQueue.includes(selected) ?
+        `<div class="sub-options">
+          <div class="subtext">${position ? "Swap positions" : "Pick a position"}</div>
+          ${direct.length ? `<div class="choice-grid direct-options">${direct.map((code) =>
+            `<button class="choice" data-position="${code}"
+              aria-label="${esc(`${labelFor(code)}: ${lineup.assignments[code] || "Open"} · ${
+                lineup.assignments[code] ? position ? "Swap positions" : "Coming off" : "Open spot"}`)}">
+              <b>${displayFor(code)}</b><small>${esc(lineup.assignments[code] || labelFor(code))}</small></button>`).join("")}</div>` :
+            '<div class="notice">No direct position is available.</div>'}
+        </div>` : '<p class="subtext">Tap a ready bench player above to review their options.</p>';
+      return `<aside class="draft-rail planned-rail"><div class="draft-scroll planned-scroll">
+        <section class="card accent planned-card"><div class="card-head"><h2>Planned substitutions</h2>
+          <span class="pill rose">${picked.length} / ${groupSize()} choosing</span></div>
+          <div class="bench-picker">${draft.base.benchQueue.filter((name) => state.arrivalOrder.includes(name))
+            .map(chooser).join("") || '<div class="notice">No bench players here.</div>'}</div>
+          <div class="bench-detail">${selectedOptions}</div>
+        </section>
+        <section class="card"><div class="card-head"><h2>Next out <small>· tap to change</small></h2>
+          <span class="pill">${due.length} out · ${open.length} open</span></div>
+          ${open.map((code) => {
+            const entrant = picked.find((op) => op.position === code && !op.expectedOccupant &&
+              lineup.assignments[code] === op.player);
+            return `<div class="exit-line"><div class="exit-row ${entrant ? "used" : ""}">
+              <b>Open ${displayFor(code)}</b><small>${esc(labelFor(code))} · ${entrant ? `${esc(entrant.player)} in · fills the vacancy` :
+                "Available for a bench player · no one comes off"}</small>
+            </div>${entrant ? `<button class="remove-choice" data-remove-sub="${esc(entrant.player)}"
+              aria-label="Cancel ${esc(entrant.player)} filling ${esc(labelFor(code))}">×</button>` : ""}</div>`;
+          }).join("")}
+          ${swaps.map(({ fieldPlayer, current, previous, index }) =>
+            `<div class="exit-line"><div class="exit-row swap">
+              <b>Swap ${esc(fieldPlayer)} → ${esc(displayFor(current))}</b>
+              <small>From ${esc(displayFor(previous))} · position change, not coming off</small></div>
+              <button class="remove-choice" data-remove-operation="${index}"
+                aria-label="Cancel ${esc(fieldPlayer)}'s position swap">×</button></div>`).join("")}
+          ${due.map((name, index) => {
+            const used = !lineup.fieldQueue.includes(name);
+            const entrant = picked.find((op) => op.expectedOccupant === name);
+            const benched = draft.operations.findIndex((op) => op.type === "bench" && op.player === name);
+            const exitChange = draft.exitChanges.findIndex((change) => change.replacement === name);
+            const detail = entrant ? `${entrant.player} in` :
+              used ? "Moved to bench" : "Awaiting a choice";
+            return `<div class="exit-line">
+              <button class="exit-row ${used ? "used" : ""} ${draft.outgoingEdit === index ? "active" : ""}"
+                data-exit-slot="${index}" ${used ? "disabled" : ""}>
+                <b>${esc(name)}</b>
+                <small>${esc(displayFor(posFor(draft.base.assignments, name)))} · ${esc(detail)}</small></button>
+              ${entrant ? `<button class="remove-choice" data-remove-sub="${esc(entrant.player)}"
+                aria-label="Cancel ${esc(entrant.player)}'s substitution for ${esc(name)}">×</button>` :
+                benched >= 0 ? `<button class="remove-choice" data-remove-operation="${benched}"
+                  aria-label="Cancel moving ${esc(name)} to the bench">×</button>` :
+                exitChange >= 0 ? `<button class="remove-choice" data-remove-exit="${exitChange}"
+                  aria-label="Restore ${esc(name)}'s original exit priority">×</button>` : ""}
+            </div>`;
+          }).join("") || (open.length ? "" :
+            '<div class="notice">No field players due out. Open positions can still be filled.</div>')}
+          ${draft.outgoingEdit != null && due[draft.outgoingEdit] &&
+            lineup.fieldQueue.includes(due[draft.outgoingEdit]) ?
+            `<div class="sub-options"><div class="subtext">Replace ${esc(due[draft.outgoingEdit])} with:</div>
+              ${draft.fieldOrder.filter((name) => !due.includes(name) &&
+                lineup.fieldQueue.includes(name)).reverse().map((name) =>
+                `<button class="exit-row" data-exit-replacement="${esc(name)}">
+                  <b>${esc(name)} · ${esc(displayFor(posFor(lineup.assignments, name)))}</b>
+                  <small>Take this exit slot · other queue positions stay put</small></button>`).join("") ||
+                '<div class="notice">No other field players available.</div>'}</div>` : ""}
+        </section>
+        </div><div class="draft-footer">${button("Save and Close", "confirm", "primary",
+          canConfirm(lineup) ? "" : "disabled")}
+          ${button("Discard", "discard", "quiet")}</div></aside>`;
+    }
+    function waitDialog({ player, canceled }) {
+      const description = ({ type, op, change }) => type === "exit" ?
+        `Next-out change: ${change.outgoing} → ${change.replacement}` :
+        op.type === "bench" ? `${op.player} → Bench` :
+        op.wasField ? `${op.player} position change` :
+        `${op.player} → ${op.expectedOccupant || "Open"} · ${displayFor(op.position)}`;
+      return `<div class="dialog-backdrop"><section class="dialog-card" role="alertdialog"
+        aria-modal="true" aria-labelledby="wait-title" aria-describedby="wait-message">
+        <h2 id="wait-title">Warning: choices will be undone</h2>
+        <p id="wait-message">Marking ${esc(player)} as waiting will undo:</p>
+        ${canceled.map((choice) => `<div class="swap-card"><strong>${esc(description(choice))}</strong></div>`).join("")}
+        <div class="actions">${button("Cancel", "cancel-wait", "secondary")}
+          ${button("OK, mark waiting", "confirm-wait", "primary")}</div>
+      </section></div>`;
+    }
+    function lineupPanel() {
+      const base = state.draft.base;
+      const player = state.selected;
+      const current = player ? posFor(base.assignments, player) : "";
+      const target = state.draft.targetPosition;
+      const choice = state.draft.operations[0];
+      const choices = player ? optionsFor(base, player) : [];
+      const benchChoices = (position) => base.benchQueue.map((name) => {
+        const waiting = state.notReady.has(name);
+        const selected = choice?.player === name && choice.position === position;
+        return `<button class="choice ${selected ? "active" : ""}" data-select="${esc(name)}"
+          aria-pressed="${Boolean(selected)}">
+          <b>${esc(name)}</b><small>${selected ? waiting ? "Selected · was Waiting" : "Selected" :
+            waiting ? "Waiting · available for manual change" :
+            position ? player ? `Replace ${esc(player)} · ${esc(displayFor(position))}` :
+              `Fill ${esc(displayFor(position))}` : "On bench"}</small></button>`;
+      }).join("") || '<div class="notice">No bench players checked in.</div>';
+      return `<aside class="draft-rail"><div class="draft-scroll">
+        <section class="card accent"><div class="card-head"><h2>Lineup changes</h2>
+          <span class="pill rose">One change</span></div>
+          <p class="subtext">Pick one change. Tap the selected option again to clear it, or pick another.
+            Players who come off wait on the bench. The round does not advance.</p>
+          <div class="card-head"><h2>${player ? esc(player) : target ? `Fill ${esc(displayFor(target))} · Open` :
+            "Choose a player"}</h2>
+            ${player || target ? button("Change player", "lineup-reset", "quiet") : ""}</div>
+          ${!player ? `<div class="subtext">${target ? "CHOOSE A BENCH PLAYER FOR THIS POSITION" :
+            "TAP A PLAYER ON THE FIELD OR CHOOSE A BENCH PLAYER"}</div>
+            <div class="choice-grid">${benchChoices(target)}</div>` :
+            `${current ? `<div class="subtext">REPLACE WITH A BENCH PLAYER</div>
+              <div class="choice-grid">${benchChoices(current)}</div>
+              <div class="subtext" style="margin-top:12px">CHANGE POSITION</div>` :
+              '<div class="subtext">REPLACE A PLAYER OR FILL AN OPEN POSITION</div>'}
+              <div class="choice-grid">${choices.map((code) => {
+                const occupant = base.assignments[code];
+                const selected = choice?.player === player && choice.position === code;
+                return `<button class="choice ${selected ? "active" : ""}"
+                  data-position="${code}" aria-pressed="${Boolean(selected)}"
+                  aria-label="${esc(labelFor(code))}: ${esc(occupant || "Open")}">
+                  <b class="position-choice"><span class="position-code">${displayFor(code)}</span>
+                    <span class="choice-player">${esc(occupant || "Open")}</span></b>
+                  <small>${esc(labelFor(code))} · ${selected ? "Selected" : occupant
+                    ? current && current !== "GK" ? "Swap positions" : "Replace this player"
+                    : "Unassigned position"}</small></button>`;
+              }).join("")}</div>
+              ${current ? `<div class="choice-grid"><button class="choice ${choice?.type === "bench" &&
+                choice.player === player ? "active" : ""}" data-action="move-to-bench"
+                aria-pressed="${Boolean(choice?.type === "bench" && choice.player === player)}">
+                <b>Move ${esc(player)} to bench</b><small>${choice?.type === "bench" &&
+                  choice.player === player ? "Selected" : `${esc(displayFor(current))} opens · Waiting`}</small>
+                </button></div>` : ""}`}
+        </section></div>
+        <div class="draft-footer">${button("Save and Close", "confirm", "primary",
+          canConfirm(preview()) ? "" : "disabled")}
+          ${button("Discard", "discard", "quiet")}</div></aside>`;
+    }
+    function draftPanel(lineup) {
+      if (state.draft.kind === "planned") return plannedPanel(lineup);
+      if (state.draft.kind === "lineup") return lineupPanel();
+      const draft = state.draft;
+      const current = selectedPlayer(lineup);
+      const options = optionsFor(lineup, current);
+      const titles = { starting: "Starting choices", halftime: "Halftime changes" };
+      let prompt;
+      if (draft.kind === "halftime" && !draft.keeper) {
+        prompt = `<section class="card accent"><h2>Choose the next goalkeeper</h2>
+          <p class="muted">Pick anyone checked in. ${draft.base.assignments.GK
+            ? "The outgoing goalkeeper can choose a field position or rest on the bench."
+            : "The goalkeeper spot is open; ready bench players choose field positions afterward."}</p>
+          <div class="subtext">ON THE FIELD</div>
+          <div class="choice-grid">${draft.base.fieldQueue.map((name) =>
+            `<button class="choice" data-keeper="${esc(name)}"><b>${esc(name)}</b>
+            <small>${esc(displayFor(posFor(draft.base.assignments, name)))} → GK · opens their spot</small></button>`).join("") ||
+            '<div class="notice">No field players yet.</div>'}</div>
+          <div class="subtext" style="margin-top:12px">ON THE BENCH</div>
+          <div class="choice-grid">${draft.base.benchQueue.map((name) =>
+            `<button class="choice" data-keeper="${esc(name)}"><b>${esc(name)}</b>
+            <small>${state.notReady.has(name) ? "Waiting · " : ""}Bench → GK</small></button>`).join("") ||
+            '<div class="notice">No bench players yet.</div>'}</div></section>`;
+      } else {
+        const hint = keeperNeedsChoice()
+          ? "Outgoing goalkeeper chooses a field position or rests on the bench" :
+          draft.kind === "starting" ? current && posFor(lineup.assignments, current)
+            ? "Repick a position or swap with another field player"
+            : "Next starter in arrival order · tap any assigned name to repick" :
+          current && originalBench().includes(current) ? "Ready bench player chooses a position" :
+          "Choose a position or move this player to the bench";
+        prompt = `<section class="card accent"><div class="card-head"><h2>${esc(titles[draft.kind])}</h2>
+          <span class="pill rose">Draft</span></div>
+          <div class="subtext">${hint}</div><h2 style="margin:6px 0 12px">${current ? esc(current) : "Choose a player below"}</h2>
+          ${draft.kind === "halftime" && draft.restOutgoingKeeper && draft.base.assignments.GK
+            ? `<div class="notice">${esc(draft.base.assignments.GK)} starts the half on the bench as Waiting.
+              ${button("Choose field instead", "cancel-keeper-rest", "quiet")}</div>` : ""}
+          ${keeperNeedsChoice() ? `<div class="choice-grid"><button class="choice"
+            data-action="rest-keeper"><b>Rest ${esc(draft.base.assignments.GK)}</b>
+            <small>Start the second half on the bench · Waiting</small></button></div>` : ""}
+          ${current ? `<div class="choice-grid">${options.map((code) => {
+            const occupant = lineup.assignments[code];
+            return `<button class="choice" data-position="${code}"
+              aria-label="${esc(labelFor(code))}: ${esc(occupant || "Open")}">
+              <b>${displayFor(code)} · ${esc(occupant || "Open")}</b>
+              <small>${esc(labelFor(code))} · ${occupant ? lineup.fieldQueue.includes(current) && posFor(lineup.assignments, current)
+                ? "Swap positions" : "Replace this player" : "Unassigned position"}</small></button>`;
+          }).join("")}</div>` :
+          `<div class="notice">${draft.kind === "starting"
+            ? "Check in another player in Setup, or save with the lineup you have."
+            : "Tap a field or bench player to make a change."}</div>`}
+          ${current && posFor(lineup.assignments, current)
+            ? `<div class="actions">${button(`Move ${esc(current)} to bench`, "move-to-bench")}</div>` : ""}
+          ${draft.kind === "starting" ? `<p class="subtext">${fieldPositions.filter((pos) => lineup.assignments[pos.code]).length} of ${fieldPositions.length} field positions assigned</p>` : ""}
+        </section>`;
+      }
+      const startingKeeper = draft.kind === "starting" ? `<section class="card">
+        <div class="card-head"><h2>Goalkeeper</h2><span class="pill ${draft.keeper ? "rose" : ""}">
+          ${esc(draft.keeper || "Not chosen yet")}</span></div>
+        <label class="subtext" for="starting-keeper">Choose any checked-in player, now or later</label>
+        <select id="starting-keeper" style="width:100%;margin-top:6px">
+          <option value="" ${draft.keeper ? "" : "selected"}>Choose goalkeeper</option>
+          ${state.arrivalOrder.map((player) => `<option value="${esc(player)}" ${draft.keeper === player ? "selected" : ""}>${esc(player)}</option>`).join("")}
+        </select><p class="subtext">Optional for now. If they already chose a field position, that spot opens.</p>
+      </section>` : "";
+      const keeperChoice = Boolean(draft.keeper);
+      const restChoice = draft.kind === "halftime" && draft.restOutgoingKeeper &&
+        Boolean(draft.base.assignments.GK);
+      const fixedChoices = Number(keeperChoice) + Number(restChoice);
+      return `<aside class="draft-rail"><div class="draft-scroll">${startingKeeper}${prompt}
+        <section class="card"><div class="card-head"><h2>Pending</h2><span class="pill rose">${lineup.descriptions.length}</span></div>
+          ${lineup.descriptions.length ? lineup.descriptions.map((text, index) => {
+            const remove = keeperChoice && index === 0 ? 'data-action="remove-keeper-choice"' :
+              restChoice && index === 1 ? 'data-action="cancel-keeper-rest"' :
+              `data-remove-pending="${index - fixedChoices}"`;
+            return `<div class="pending-choice"><div class="swap-card"><strong>${esc(text)}</strong></div>
+              <button class="remove-choice" ${remove} aria-label="Cancel ${esc(text)}">×</button></div>`;
+          }).join("") :
+            '<div class="notice">Choices will appear here. Nothing changes until Save and Close.</div>'}
+          ${fieldPositions.some((pos) => !lineup.assignments[pos.code])
+            ? `<p class="subtext">Open positions: ${fieldPositions.filter((pos) => !lineup.assignments[pos.code])
+              .map((pos) => pos.display).join(", ")} · can remain open</p>` : ""}
+        </section>
+        <section class="card"><div class="card-head"><h2>Bench · choice order</h2>
+            <span class="subtext">${draft.kind === "halftime" && draft.restOutgoingKeeper
+                ? "GK resting; ready bench players choose" : draft.kind === "halftime"
+                ? "Outgoing GK first; then any ready player" : "Top ready player first"}</span></div>
+            ${queue(lineup, "bench", true)}
+          </section>
+        ${draft.kind === "starting" || draft.kind !== "halftime" || draft.keeper
+          ? `<section class="card"><div class="card-head"><h2>Field queue</h2><span class="subtext">${draft.kind === "starting" ? "Starting priority" : "Tap to swap or move"}</span></div>
+              ${queue(lineup, "field", true)}</section>` : ""}
+        </div><div class="draft-footer">${button("Save and Close", "confirm", "primary",
+          canConfirm(lineup) ? "" : "disabled")}
+          ${button("Discard", "discard", "quiet")}</div></aside>`;
+    }
+    function game() {
+      if (!state.gameStarted && !state.draft) {
+        return `<section class="card"><h2>Start in Setup</h2><p class="muted">Check in players if any are here, then assign positions or save an empty lineup on Game.</p>
+          ${button("Go to Setup →", "setup", "primary")}</section>`;
+      }
+      const lineup = preview();
+      const pitchLineup = state.draft?.kind === "lineup" ? state.draft.base : lineup;
+      return `<div class="grid cols game-layout"><section class="card field-card">
+        <div class="card-head"><h2>${state.draft?.kind === "lineup" ? "Current lineup" :
+          state.draft ? "Proposed lineup" : "On the field"}</h2>
+          ${state.draft?.kind === "lineup" ? '<span class="pill rose">Change not yet applied</span>' :
+            state.draft ? '<span class="pill rose">Not yet applied</span>' :
+            '<span class="subtext">Tap a player to change positions</span>'}</div>
+        ${pitch(pitchLineup)}
+        <div class="pitch-mini">${state.draft?.kind === "lineup"
+          ? "Choose a player on the field; the lineup updates when you save."
+          : state.draft
+          ? "Pick a player, then tap a position or a ready bench player to replace them."
+          : "Tap a field player to move or replace them, or a bench player to fill an open spot."}</div>
+      </section>${state.draft ? draftPanel(lineup) : livePanel(lineup)}</div>`;
+    }
+    function history() {
+      return `<div class="grid cols"><section class="card"><div class="card-head"><h2>Recent changes</h2>
+        <span class="pill">This game</span></div>
+        <div class="timeline">${state.events.length ? state.events.map((event, i) =>
+          `<div class="entry"><div class="name">${esc(event)}</div><div class="subtext">${i === 0 ? "Most recent" : "Earlier"}</div></div>`).join("") :
+          '<div class="entry">No confirmed changes yet</div>'}</div>
+        <div class="actions">${button("Back to Game →", "game", "primary")}
+          ${button("Undo last confirmed change", "undo-confirmed", "secondary",
+            state.undoStack.length && !state.draft ? "" : "disabled")}</div></section>
+        <section class="card soft"><h2>Saved games</h2>
+          ${state.savedGames.length ? state.savedGames.map((game) =>
+            `<details class="saved-game"><summary>${esc(new Date(game.savedAt).toLocaleDateString())}
+              · ${game.players.length} players · Half ${game.half} · Round ${game.round}</summary>
+              <div class="subtext">${game.events.length} recorded changes</div>
+              <p class="subtext">Players: ${game.players.map(esc).join(", ") || "None"}</p>
+              ${game.events.map((event) => `<p class="subtext">${esc(event)}</p>`).join("")}
+              <div class="subtext">Final lineup: ${(game.positions ||
+                Object.keys(game.assignments).map((code) => ({ code, display: code }))).map((pos) =>
+                `${esc(pos.display)}: ${esc(game.assignments[pos.code] || "Open")}`).join(" · ")}</div>
+            </details>`).join("") :
+            '<p class="muted">No completed games on this device yet.</p>'}
+          ${button("Finish current game", "finish", "secondary",
+            state.gameStarted && !state.draft ? "" : "disabled")}</section></div>`;
+    }
+    const pages = { home, setup, game, history };
+    function render() {
+      const selectors = [".bench-picker", ".bench-detail", ".planned-scroll"];
+      const offsets = selectors.map((selector) => $("app").querySelector?.(selector)?.scrollTop);
+      const previousPicker = $("app").querySelector?.(".bench-picker .active")?.dataset.subPlayer;
+      const previousAssigned = $("app").querySelector?.(".bench-picker .active")?.dataset.assigned;
+      $("nav").innerHTML = screens.map(([key, title]) =>
+        `<button data-screen="${key}" class="${state.screen === key ? "active" : ""}"
+        ${state.screen === key ? 'aria-current="page"' : ""}>${title}</button>`).join("");
+      let action;
+      if (state.screen === "game" && state.draft) {
+        action = button("Save and Close", "confirm", "primary top-action", canConfirm(preview()) ? "" : "disabled");
+      } else if (state.screen === "game" && !state.gameStarted) {
+        action = button("Setup", "setup", "primary top-action");
+      } else if (state.screen === "game") {
+        action = button("Plan subs", "planned", "primary top-action") +
+          button("Halftime", "halftime", "secondary top-action");
+      } else if (state.screen === "setup" && !state.gameStarted && !state.draft) {
+        action = button("Choose positions", "start-lineup", "primary top-action");
+      } else {
+        action = button(state.screen === "home" ? "New game" : "Game",
+          state.screen === "home" ? "new-game" : "game", "primary top-action");
+      }
+      $("top-action").innerHTML = action;
+      $("app").innerHTML = pages[state.screen]() +
+        (state.draft?.kind === "planned" && state.draft.pendingWait
+          ? waitDialog(state.draft.pendingWait) : "");
+      selectors.forEach((selector, index) => {
+        const element = $("app").querySelector?.(selector);
+        if (element && offsets[index] != null) {
+          element.scrollTop = selector === ".bench-detail" &&
+            (previousPicker !== $("app").querySelector(".bench-picker .active")?.dataset.subPlayer ||
+             previousAssigned !== $("app").querySelector(".bench-picker .active")?.dataset.assigned)
+            ? 0 : offsets[index];
+        }
+      });
+      $("app").querySelector?.('[data-action="cancel-wait"]')?.focus();
+      saveGame();
+    }
+    function setLineupChoice(choice) {
+      const previous = state.draft.operations[0];
+      state.draft.operations = previous?.player === choice.player &&
+        previous.type === choice.type && previous.position === choice.position ? [] : [choice];
+      render();
+    }
+    function choosePosition(code) {
+      if (!state.draft) {
+        const player = state.assignments[code];
+        beginDraft("lineup");
+        state.selected = player || null;
+        state.draft.targetPosition = player ? null : code;
+        render(); return;
+      }
+      if (state.draft.kind === "lineup") {
+        const base = state.draft.base;
+        const player = state.selected;
+        if (player && optionsFor(base, player).includes(code)) {
+          setLineupChoice({
+            player, position: code,
+            ...(base.benchQueue.includes(player) && base.assignments[code]
+              ? { type: "replacement" } : {})
+          });
+        } else if (base.assignments[code]) {
+          state.draft.operations = [];
+          state.selected = base.assignments[code] === player ? null : base.assignments[code];
+          state.draft.targetPosition = null;
+          render();
+        } else if (!player) {
+          state.draft.operations = [];
+          state.draft.targetPosition = state.draft.targetPosition === code ? null : code;
+          render();
+        } else {
+          notify("Choose an available position for the selected player.");
+        }
+        return;
+      }
+      const lineup = preview();
+      const player = selectedPlayer(lineup);
+      if (!player || !optionsFor(lineup, player).includes(code)) {
+        const occupant = lineup.assignments[code];
+        if (occupant && (["starting", "lineup"].includes(state.draft.kind) ||
+            (state.draft.kind === "planned" && state.draft.base.benchQueue.includes(occupant) &&
+              lineup.fieldQueue.includes(occupant)))) {
+          const selectedAgain = state.draft.kind === "planned" && player === occupant;
+          state.selected = selectedAgain ? null : occupant;
+          if (state.draft.kind === "planned") state.draft.selectionPaused = selectedAgain;
+          render(); return;
+        }
+        notify("Choose an available position for the selected player."); return;
+      }
+      state.draft.operations.push({
+        player, position: code,
+        ...(state.draft.kind !== "lineup" ? {
+          expectedOccupant: lineup.assignments[code],
+          wasField: Boolean(posFor(lineup.assignments, player))
+        } : {})
+      });
+      if (state.draft.kind === "starting") state.draft.skipped.delete(player);
+      if (state.draft.kind === "planned") state.draft.selectionPaused = false;
+      state.selected = null;
+      render();
+    }
+    function replaceExit(replacement) {
+      if (state.draft?.kind !== "planned") return;
+      const slot = state.draft.outgoingEdit;
+      const outgoing = dueOut()[slot];
+      const lineup = preview();
+      if (slot == null || !outgoing || !lineup.fieldQueue.includes(outgoing) ||
+          !state.draft.fieldOrder.includes(replacement) ||
+          dueOut().includes(replacement) || !lineup.fieldQueue.includes(replacement)) {
+        notify("Choose a field player not already due out."); return;
+      }
+      const order = state.draft.fieldOrder;
+      const oldIndex = order.indexOf(outgoing), newIndex = order.indexOf(replacement);
+      [order[oldIndex], order[newIndex]] = [order[newIndex], order[oldIndex]];
+      state.draft.exitChanges.push({ outgoing, replacement });
+      state.draft.outgoingEdit = null;
+      render();
+    }
+    function moveToBench() {
+      if (!state.draft) return;
+      const lineup = state.draft.kind === "lineup" ? state.draft.base : preview();
+      const player = state.draft.kind === "lineup" ? state.selected : selectedPlayer(lineup);
+      if (!player || !posFor(lineup.assignments, player)) {
+        notify("Choose a player on the field first."); return;
+      }
+      if (state.draft.kind === "lineup") {
+        setLineupChoice({ type: "bench", player });
+        return;
+      }
+      state.draft.operations.push({
+        type: "bench", player, expectedPosition: posFor(lineup.assignments, player)
+      });
+      if (state.draft.kind === "starting") state.draft.skipped.add(player);
+      state.selected = null;
+      render();
+    }
+    function confirmDraft() {
+      if (!state.draft) return;
+      const lineup = preview();
+      if (!canConfirm(lineup)) { notify("Resolve the selected player or queue before saving."); return; }
+      const kind = state.draft.kind;
+      rememberChange();
+      state.assignments = lineup.assignments;
+      state.fieldQueue = lineup.fieldQueue;
+      state.benchQueue = lineup.benchQueue;
+      for (const player of [lineup.assignments.GK, ...lineup.fieldQueue]) {
+        if (player) state.notReady.delete(player);
+      }
+      if (kind === "lineup") {
+        for (const player of pendingLineupWaiting(lineup)) state.notReady.add(player);
+      }
+      if (kind === "halftime" && state.draft.restOutgoingKeeper &&
+          state.draft.base.assignments.GK) {
+        state.notReady.add(state.draft.base.assignments.GK);
+      }
+      if (kind === "planned" && chosenEntrants().length) state.round++;
+      if (kind === "halftime") state.half = 2;
+      if (kind === "starting") state.gameStarted = true;
+      const prefix = kind === "planned" && chosenEntrants().length ? `Round ${state.round}` :
+        kind === "halftime" ? "Halftime" : kind === "starting" ? "Kickoff" :
+        "Lineup change";
+      state.events.unshift(`${prefix}: ${lineup.descriptions.join("; ") ||
+        (kind === "planned" ? "Next-out priority updated" : "Lineup saved")}`);
+      state.draft = null; state.selected = null;
+      go("game"); notify(`${prefix} saved`);
+    }
+    document.addEventListener("click", (event) => {
+      const element = event.target.closest("button"); if (!element) return;
+      if (state.draft?.pendingWait) {
+        const player = state.draft.pendingWait.player;
+        if (element.dataset.action === "cancel-wait") {
+          state.draft.pendingWait = null;
+          render();
+        } else if (element.dataset.action === "confirm-wait") {
+          state.draft.pendingWait = null;
+          state.notReady.add(player);
+          const cleared = reconcilePlanned();
+          render();
+          if (cleared) notify(`${cleared} choice${cleared === 1 ? "" : "s"} cleared after ${player} waited.`);
+        }
+        return;
+      }
+      if (element.dataset.screen) { go(element.dataset.screen); return; }
+      if (element.dataset.position) { choosePosition(element.dataset.position); return; }
+      if (element.dataset.removeSub || element.dataset.removeOperation !== undefined ||
+          element.dataset.removeExit !== undefined) {
+        if (state.draft?.kind !== "planned") return;
+        const op = element.dataset.removeOperation === undefined ? -1 :
+          Number(element.dataset.removeOperation);
+        const exit = element.dataset.removeExit === undefined ? -1 :
+          Number(element.dataset.removeExit);
+        if (element.dataset.removeSub && !state.draft.base.benchQueue.includes(element.dataset.removeSub) ||
+            op !== -1 && (!Number.isInteger(op) || op < 0 || op >= state.draft.operations.length) ||
+            exit !== -1 && (!Number.isInteger(exit) || exit < 0 || exit >= state.draft.exitChanges.length)) return;
+        const cleared = reconcilePlanned({
+          excludedPlayer: element.dataset.removeSub || null, excludedOperation: op, excludedExit: exit
+        });
+        render();
+        if (cleared) notify(`${cleared} dependent choice${cleared === 1 ? "" : "s"} also cleared.`);
+        return;
+      }
+      if (element.dataset.exitSlot !== undefined) {
+        if (state.draft?.kind !== "planned") return;
+        const slot = Number(element.dataset.exitSlot);
+        if (!Number.isInteger(slot) || !dueOut()[slot] ||
+            !preview().fieldQueue.includes(dueOut()[slot])) return;
+        state.draft.outgoingEdit = state.draft.outgoingEdit === slot ? null : slot;
+        render(); return;
+      }
+      if (element.dataset.exitReplacement) { replaceExit(element.dataset.exitReplacement); return; }
+      if (element.dataset.subPlayer) {
+        if (state.draft?.kind !== "planned") return;
+        const name = element.dataset.subPlayer, lineup = preview();
+        if (!state.draft.base.benchQueue.includes(name) || state.notReady.has(name) ||
+            (!lineup.fieldQueue.includes(name) &&
+              (!lineup.benchQueue.includes(name) || chosenEntrants().length >= groupSize()))) return;
+        const selectedAgain = selectedPlayer(lineup) === name;
+        state.selected = selectedAgain ? null : name;
+        state.draft.selectionPaused = selectedAgain;
+        render(); return;
+      }
+      if (element.dataset.keeper) {
+        if (state.draft?.kind !== "halftime" ||
+            ![...state.draft.base.fieldQueue, ...state.draft.base.benchQueue].includes(element.dataset.keeper)) return;
+        state.draft.keeper = element.dataset.keeper;
+        state.draft.restOutgoingKeeper = false;
+        state.selected = null; render(); return;
+      }
+      if (element.dataset.select) {
+        const player = element.dataset.select;
+        if (!state.draft) {
+          if (state.fieldQueue.includes(player) || state.benchQueue.includes(player)) {
+            beginDraft("lineup");
+            state.selected = player; render();
+          }
+          return;
+        }
+        if (state.draft.kind === "lineup") {
+          const base = state.draft.base;
+          const field = base.fieldQueue.includes(player) || base.assignments.GK === player;
+          if (!field && !base.benchQueue.includes(player)) return;
+          const current = state.selected && posFor(base.assignments, state.selected);
+          if (!field && current) {
+            setLineupChoice({ type: "replacement", player, position: current });
+          } else if (!field && state.draft.targetPosition) {
+            setLineupChoice({ player, position: state.draft.targetPosition });
+          } else {
+            state.draft.operations = [];
+            state.selected = state.selected === player ? null : player;
+            state.draft.targetPosition = null;
+            render();
+          }
+          return;
+        }
+        const lineup = preview();
+        const field = lineup.fieldQueue.includes(player) || lineup.assignments.GK === player;
+        if (state.draft.kind === "starting") {
+          if (!field && (player !== nextStarter(lineup) || !lineup.benchQueue.includes(player))) return;
+          state.selected = player; render(); return;
+        }
+        if (keeperNeedsChoice() && player !== state.draft.base.assignments.GK) return;
+        if (state.draft.kind === "halftime" && !state.draft.keeper) return;
+        if (!field && (!eligibleBench().includes(player) || !lineup.benchQueue.includes(player))) return;
+        if (!field && state.draft.kind !== "lineup" &&
+            (["planned", "halftime"].includes(state.draft.kind)
+              ? chosenEntrants().length >= groupSize() : player !== nextBench(lineup))) return;
+        if (!field && state.draft.kind === "lineup" && state.selected &&
+            posFor(lineup.assignments, state.selected)) {
+          state.draft.operations.push({
+            type: "replacement", player,
+            position: posFor(lineup.assignments, state.selected)
+          });
+          state.selected = null;
+          render(); return;
+        }
+        state.selected = state.draft.kind === "lineup" && field && state.selected === player
+          ? null : player;
+        if (state.draft.kind === "planned") state.draft.selectionPaused = false;
+        render(); return;
+      }
+      if (element.dataset.resume && state.draft?.kind === "starting") {
+        state.draft.skipped.delete(element.dataset.resume); render(); return;
+      }
+      if (element.dataset.ready) {
+        const player = element.dataset.ready;
+        if (state.draft?.kind === "planned") {
+          if (!state.draft.base.benchQueue.includes(player)) return;
+          if (chosenEntrants().some((choice) => choice.player === player)) {
+            notify("Remove this player's substitution before marking them waiting."); return;
+          }
+          if (!state.notReady.has(player)) {
+            const impact = planReconciliation({ waitingPlayer: player }).canceled;
+            if (impact.length) {
+              state.draft.pendingWait = { player, canceled: impact };
+              render(); return;
+            }
+          }
+          state.notReady.has(player) ? state.notReady.delete(player) : state.notReady.add(player);
+          reconcilePlanned();
+          render(); return;
+        }
+        if (state.draft?.kind !== "starting" &&
+            chosenEntrants().length) {
+          notify("Undo pending bench choices before changing readiness."); return;
+        }
+        state.notReady.has(player) ? state.notReady.delete(player) : state.notReady.add(player);
+        state.selected = null; render();
+        return;
+      }
+      if (element.dataset.attendance) {
+        const player = element.dataset.attendance;
+        const removing = state.arrivalOrder.includes(player);
+        if (state.gameStarted) rememberChange();
+        if (removing) {
+          state.arrivalOrder = state.arrivalOrder.filter((name) => name !== player);
+          const assigned = posFor(state.assignments, player);
+          if (assigned) state.assignments[assigned] = null;
+          state.fieldQueue = state.fieldQueue.filter((name) => name !== player);
+          state.benchQueue = state.benchQueue.filter((name) => name !== player);
+          state.notReady.delete(player);
+        } else {
+          state.arrivalOrder.push(player);
+          state.benchQueue.push(player);
+        }
+        if (state.gameStarted) {
+          state.events.unshift(`${player} ${removing ? "left; position opened" : "arrived; added to bench"}`);
+        }
+        syncDraftRoster(removing ? player : null);
+        render(); return;
+      }
+      if (element.dataset.move) {
+        if (state.gameStarted || (state.draft && state.draft.kind !== "starting")) return;
+        const name = element.dataset.move, index = state.arrivalOrder.indexOf(name);
+        const previous = state.arrivalOrder.slice(0, index).reverse().find((player) =>
+          player !== state.draft?.keeper);
+        if (previous) {
+          const otherIndex = state.arrivalOrder.indexOf(previous);
+          [state.arrivalOrder[index], state.arrivalOrder[otherIndex]] =
+            [state.arrivalOrder[otherIndex], state.arrivalOrder[index]];
+          state.benchQueue = state.arrivalOrder.filter((player) =>
+            state.benchQueue.includes(player));
+          syncStartingDraft();
+          render();
+        }
+        return;
+      }
+      const action = element.dataset.action;
+      if (pages[action]) { go(action); return; }
+      if (action === "new-game") { newGame(); return; }
+      if (action === "start-lineup") { startLineup(); return; }
+      if (action === "lineup-reset" && state.draft?.kind === "lineup") {
+        state.selected = null; state.draft.targetPosition = null;
+        state.draft.operations = []; render(); return;
+      }
+      if (action === "rest-keeper" && keeperNeedsChoice()) {
+        state.draft.restOutgoingKeeper = true; state.selected = null; render(); return;
+      }
+      if (action === "remove-keeper-choice" && state.draft?.keeper &&
+          ["starting", "halftime"].includes(state.draft.kind)) {
+        const draft = state.draft;
+        draft.keeper = null;
+        if (draft.kind === "starting") {
+          removePendingChoice(-1);
+        } else {
+          const cleared = draft.operations.length + Number(draft.restOutgoingKeeper);
+          draft.restOutgoingKeeper = false;
+          draft.operations = [];
+          state.selected = null;
+          render();
+          if (cleared) notify(`${cleared} dependent choice${cleared === 1 ? "" : "s"} also cleared.`);
+        }
+        return;
+      }
+      if (action === "cancel-keeper-rest" && state.draft?.kind === "halftime" &&
+          state.draft.restOutgoingKeeper) {
+        const cleared = state.draft.operations.length;
+        state.draft.restOutgoingKeeper = false;
+        state.draft.operations = [];
+        state.selected = null;
+        render();
+        if (cleared) notify(`${cleared} dependent choice${cleared === 1 ? "" : "s"} also cleared.`);
+        return;
+      }
+      if (action === "move-to-bench") { moveToBench(); return; }
+      if (["planned", "halftime"].includes(action)) { beginDraft(action); return; }
+      if (action === "confirm") { confirmDraft(); return; }
+      if (element.dataset.removePending !== undefined &&
+          ["starting", "halftime"].includes(state.draft?.kind)) {
+        const index = Number(element.dataset.removePending);
+        if (!Number.isInteger(index) || index < 0 || index >= state.draft.operations.length) return;
+        removePendingChoice(index); return;
+      }
+      if (action === "discard" && state.draft) {
+        if (state.draft.kind === "starting") { state.draft = null; state.selected = null; go("setup"); }
+        else { state.draft = null; state.selected = null; go("game"); }
+        return;
+      }
+      if (action === "undo-confirmed" && state.undoStack.length && !state.draft) {
+        const previous = state.undoStack.pop();
+        Object.assign(state, previous.lineup);
+        state.players = previous.players;
+        state.arrivalOrder = previous.arrivalOrder;
+        state.notReady = previous.notReady;
+        state.round = previous.round; state.half = previous.half;
+        state.gameStarted = previous.gameStarted; state.events = previous.events;
+        if (!state.gameStarted) go("setup");
+        else { render(); notify("Last confirmed change undone"); }
+        return;
+      }
+      if (action === "finish" && state.gameStarted && !state.draft) {
+        if (!window.confirm("Finish this game and save it to this device?")) return;
+        archiveGame();
+        resetGame();
+        go("home");
+        notify("Game saved on this device");
+      }
+    });
+    document.addEventListener("change", (event) => {
+      if (event.target.id === "starting-keeper" && state.draft?.kind === "starting") {
+        const name = event.target.value;
+        if (name && !state.arrivalOrder.includes(name)) {
+          notify("Check in this player before choosing them as goalkeeper."); return;
+        }
+        state.draft.keeper = name || null;
+        syncStartingDraft();
+        removePendingChoice(-1);
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && state.draft?.pendingWait) {
+        state.draft.pendingWait = null;
+        render();
+      }
+    });
+    document.addEventListener("submit", (event) => {
+      if (event.target.id !== "add-player") return;
+      event.preventDefault();
+      const field = event.target.elements.player, name = field.value.trim();
+      if (!name || state.players.some((player) => player.toLowerCase() === name.toLowerCase())) {
+        notify("Enter a new player name."); return;
+      }
+      if (state.gameStarted) rememberChange();
+      state.players.push(name);
+      state.arrivalOrder.push(name);
+      state.benchQueue.push(name);
+      if (state.gameStarted) state.events.unshift(`${name} arrived; added to bench`);
+      syncDraftRoster(null);
+      field.value = ""; render(); notify(`${name} added to this game`);
+    });
+    document.getElementById("unlock-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const password = $("password").value;
+      $("unlock-status").textContent = "";
+      unlockTeam(password);
+    });
+    boot();
+  </script>
+</body>
+</html>

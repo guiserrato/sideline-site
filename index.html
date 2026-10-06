@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sideline | Coach home</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cp-bg); color: var(--cp-text); font: 1rem/1.45 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; }
+    main { max-width: 1000px; margin: 0 auto; padding: 56px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); }
+    .eyebrow { color: var(--cp-accent); font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 8px 0 0; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; letter-spacing: -.04em; }
+    p { color: var(--cp-text-muted); }
+    .intro { max-width: 570px; margin-top: 12px; font-size: 1.05rem; }
+    .teams { display: grid; gap: 12px; margin-top: 36px; }
+    .team { display: flex; align-items: center; gap: 20px; min-height: 138px; padding: 16px 20px; border: 1px solid var(--cp-border); border-radius: 16px; background: var(--cp-surface); color: var(--cp-text); text-decoration: none; box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-border); }
+    .team:hover, .team:focus-visible { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
+    .team:focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 2px; }
+    .team-logo { display: grid; place-items: center; flex: 0 0 104px; height: 104px; padding: 4px; overflow: hidden; border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-bg-elevated); }
+    .team-logo.golden-warriors { background: var(--cp-text); }
+    html[data-theme="dark"] .team-logo.golden-warriors { background: var(--cp-bg-elevated); }
+    .team-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .team-copy { min-width: 0; flex: 1; }
+    .team-copy strong { display: block; font-size: 1.3rem; letter-spacing: -.02em; }
+    .team-copy span { display: block; margin-top: 5px; color: var(--cp-text-muted); font-size: .88rem; }
+    .team-arrow { display: grid; place-items: center; flex: 0 0 44px; height: 44px; border-radius: .625rem; background: var(--cp-accent-soft); color: var(--cp-accent); font-size: 1.4rem; }
+    .footnote { margin-top: 24px; font-size: .85rem; }
+    @media (max-width: 560px) {
+      main { padding-top: 32px; }
+      .team { gap: 12px; min-height: 104px; padding: 12px; }
+      .team-logo { flex-basis: 76px; height: 76px; }
+      .team-copy strong { font-size: 1.06rem; }
+      .team-copy span { font-size: .77rem; }
+      .team-arrow { flex-basis: 36px; height: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <main><header>
+      <span class="eyebrow">Sideline / Coach home</span>
+      <h1>Ready for game day.</h1>
+      <p class="intro">Choose a team to manage its lineup and substitutions. Each team installs separately and keeps its games on this device.</p>
+    </header>
+    <section class="teams" aria-label="Your teams">
+      <a class="team" href="golden-warriors/">
+        <span class="team-logo golden-warriors"><img src="assets/golden-warriors.png" alt="" width="96" height="96"></span>
+        <span class="team-copy"><strong>Golden Warriors</strong>
+          <span>11v11 · Team workspace</span></span>
+        <span class="team-arrow" aria-hidden="true">→</span></a>
+      <a class="team" href="panthers/">
+        <span class="team-logo panthers"><img src="assets/panthers.png" alt="" width="96" height="96"></span>
+        <span class="team-copy"><strong>Panthers</strong>
+          <span>9v9 · Team workspace</span></span>
+        <span class="team-arrow" aria-hidden="true">→</span></a>
+    </section>
+    <p class="footnote">Player rosters unlock inside each team workspace.</p>
+  </main>
+</body>
+</html>

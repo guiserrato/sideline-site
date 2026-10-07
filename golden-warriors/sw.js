@@ -1,3 +1,4 @@
+// Keep the Golden Warriors worker distinct so browsers refresh this team app's manifest and cache.
 const CACHE = "sideline-golden-warriors-45bfa4b5e59ca3a3";
 const FILES = ["./", "./index.html", "./roster.enc.json", "./manifest.webmanifest", "./logo.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", (event) => {

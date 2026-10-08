@@ -1,5 +1,4 @@
-// Keep the Panthers worker distinct so browsers refresh this team app's manifest and cache.
-const CACHE = "sideline-panthers-679ff3b30395c99f-id-experiment";
+const CACHE = "sideline-panthers-a710e3f605f1ba49";
 const FILES = ["./", "./index.html", "./roster.enc.json", "./manifest.webmanifest", "./logo.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(FILES)).then(() => self.skipWaiting()));

@@ -39,6 +39,9 @@
       --cp-danger: #dc2626;
       --cp-warning: #f59e0b;
       --cp-link: #0078d4;
+      --cp-chooser: #0067b8;
+      --cp-chooser-soft: rgba(0, 103, 184, 0.08);
+      --cp-chooser-fg: #ffffff;
       --cp-pending: #865000;
       --cp-pending-soft: rgba(180, 110, 0, 0.1);
       --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
@@ -67,6 +70,9 @@
       --cp-danger: #f87171;
       --cp-warning: #fbbf24;
       --cp-link: #4da6ff;
+      --cp-chooser: #79bfff;
+      --cp-chooser-soft: rgba(121, 191, 255, 0.12);
+      --cp-chooser-fg: #1a1a1a;
       --cp-pending: #fbbf24;
       --cp-pending-soft: rgba(251, 191, 36, 0.12);
       --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
@@ -135,6 +141,7 @@
     .avatar { flex: 0 0 34px; height: 34px; width: 34px; display: grid; place-items: center; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 10px; color: var(--cp-accent); font-weight: 800; font-size: .73rem; }
     .pill { display: inline-flex; align-items: center; white-space: nowrap; padding: 5px 9px; border: 1px solid var(--cp-border); border-radius: 99px; background: var(--cp-bg-elevated); font-size: .74rem; font-weight: 650; }
     .pill.rose { background: var(--cp-accent-soft); color: var(--cp-accent); border-color: var(--cp-highlight); }
+    .pill.pending { background: var(--cp-pending-soft); color: var(--cp-pending); border-color: var(--cp-pending); }
     .pill.warning { color: var(--cp-warning); }
     .primary, .secondary, .quiet, .choice { min-height: 42px; border-radius: 10px; padding: 9px 14px; font-weight: 700; }
     .primary { background: var(--cp-accent); color: var(--cp-accent-fg); border: 1px solid var(--cp-accent); }
@@ -145,14 +152,15 @@
     .notice { padding: 12px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-bg-elevated); font-size: .84rem; }
     .queue { gap: 4px; }
     .queue-label { font-size: .71rem; color: var(--cp-text-muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 750; margin: 2px 0; }
-    .queue-label.bottom { text-align: right; color: var(--cp-accent); }
+    .queue-label.bottom { text-align: right; }
     .queue-item { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 8px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-bg-elevated); }
-    .queue-item.selected, .queue-item.due { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
+    .queue-item.selected { border: 2px solid var(--cp-chooser); background: var(--cp-chooser-soft); }
+    .queue-item.due { border-color: var(--cp-border-strong); }
     .queue-item.next { border-color: var(--cp-border-strong); }
     .queue-item.dim { opacity: .7; }
     .queue-item .num { color: var(--cp-text-muted); font-size: .74rem; font-weight: 800; width: 16px; flex: 0 0 16px; }
     .queue-item .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .position-code { flex: 0 0 auto; min-width: 38px; padding: 4px 5px; border: 1px solid var(--cp-highlight); border-radius: 6px; background: var(--cp-accent-soft); color: var(--cp-accent); font-size: .88rem; font-weight: 850; text-align: center; }
+    .position-code { flex: 0 0 auto; min-width: 38px; padding: 4px 5px; border: 1px solid var(--cp-border); border-radius: 6px; background: var(--cp-surface-soft); color: var(--cp-text); font-size: .88rem; font-weight: 850; text-align: center; }
     .queue-item .quiet { min-height: 34px; font-size: .76rem; }
     .queue-pick { width: 100%; padding: 0; text-align: left; border: 0; background: transparent; color: var(--cp-text); }
     .queue-pick:disabled { opacity: 1; }
@@ -165,21 +173,21 @@
     .goal { position: absolute; bottom: 0; left: 41%; right: 41%; height: 9px; background: var(--cp-border-strong); border-radius: 4px 4px 0 0; }
     .goal::before { content: ""; position: absolute; bottom: 60px; left: 50%; width: 7px; height: 7px; border-radius: 50%; background: var(--cp-border-strong); }
     .pitch-note { position: absolute; top: 17px; left: 19px; color: var(--cp-text-muted); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; }
-    .pitch-picker { position: absolute; top: 15px; right: 18px; z-index: 2; display: flex; align-items: center; gap: 8px; max-width: calc(100% - 140px); padding: 6px 10px; border: 1px solid var(--cp-border-strong); border-radius: 8px; background: var(--cp-surface); }
-    .pitch-picker span { flex: 0 0 auto; color: var(--cp-text-muted); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
-    .pitch-picker strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.1rem; }
+    .pitch-picker { position: absolute; top: 15px; right: 18px; z-index: 2; max-width: calc(100% - 140px); padding: 6px 10px; border: 2px solid var(--cp-chooser); border-radius: 8px; background: var(--cp-surface); color: var(--cp-chooser); font-size: 1rem; line-height: 1.2; }
+    .pitch-picker strong { font-size: 1.6rem; font-weight: 850; overflow-wrap: anywhere; }
     .pitch-change { position: absolute; top: 15px; right: 18px; z-index: 2; max-width: calc(100% - 140px); padding: 8px 10px; border: 2px solid var(--cp-pending); border-radius: 8px; background: var(--cp-surface); color: var(--cp-pending); font-size: .9rem; font-weight: 700; }
-    .marker { position: absolute; z-index: 1; transform: translate(-50%, -50%); min-width: 94px; max-width: 122px; min-height: 60px; padding: 6px 8px; border: 1px solid var(--cp-accent); border-radius: 10px; background: var(--cp-surface); color: var(--cp-text); text-align: center; box-shadow: 0 1px 2px var(--cp-border); }
-    .marker b { display: block; color: var(--cp-accent); font-size: 1.18rem; line-height: 1.08; letter-spacing: .04em; font-weight: 850; }
+    .marker { position: absolute; z-index: 1; transform: translate(-50%, -50%); min-width: 94px; max-width: 122px; min-height: 60px; padding: 6px 8px; border: 1px solid var(--cp-border-strong); border-radius: 10px; background: var(--cp-surface); color: var(--cp-text); text-align: center; box-shadow: 0 1px 2px var(--cp-border); }
+    .marker b { display: block; font-size: 1.18rem; line-height: 1.08; letter-spacing: .04em; font-weight: 850; }
     .marker span { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .8rem; font-weight: 600; }
     .marker.open { border-style: dashed; }
-    .marker.offered { border-width: 2px; background: var(--cp-accent-soft); box-shadow: 0 0 0 2px var(--cp-highlight); }
-    .marker.selected { background: var(--cp-accent); color: var(--cp-accent-fg); }
-    .marker.selected b { color: var(--cp-accent-fg); }
-    .marker.pending { border: 2px solid var(--cp-pending); background: var(--cp-pending-soft); }
-    .marker.pending b { color: var(--cp-pending); }
-    .marker .pending-label { display: block; color: var(--cp-pending); font-size: .65rem; font-weight: 800; line-height: 1.2; }
+    .marker.pending { border-color: var(--cp-pending); background: var(--cp-pending-soft); }
+    .marker .pending-label { display: block; color: var(--cp-pending); font-size: .62rem; font-weight: 800; line-height: 1.1; text-transform: uppercase; }
+    .marker.offered { border: 2px solid var(--cp-chooser); box-shadow: 0 0 0 1px var(--cp-chooser); }
+    .marker.offered b { color: var(--cp-chooser); }
+    .marker.selected { border-color: var(--cp-chooser); background: var(--cp-chooser); color: var(--cp-chooser-fg); }
+    .marker.selected b, .marker.selected .pending-label { color: var(--cp-chooser-fg); }
     .marker.unavailable { opacity: .55; }
+    .marker.pending.unavailable { opacity: 1; }
     .pitch-mini { color: var(--cp-text-muted); font-size: .77rem; margin-top: 7px; }
     .game-layout .field-card { padding: 10px; }
     .game-layout .field-card .card-head { margin: 0 4px 8px; }
@@ -210,26 +218,28 @@
     .bench-detail { max-height: 120px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
     .choice-grid.direct-options { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 4px; }
     .direct-options .choice { min-height: 48px; padding: 5px 4px; text-align: center; }
-    .direct-options .choice b { color: var(--cp-accent); font-size: 1.05rem; }
+    .direct-options .choice b { color: var(--cp-chooser); font-size: 1.05rem; }
     .direct-options .choice small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
     .draft-footer { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 8px; background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 10px; }
     .draft-footer .primary { flex: 1; }
     .draft-footer button { min-height: 44px; padding-inline: 10px; font-size: .82rem; }
     .sub-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
     .sub-row .queue-pick { min-height: 42px; padding: 2px 8px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-bg-elevated); }
-    .sub-row .queue-pick.active { border: 2px solid var(--cp-accent); background: var(--cp-accent-soft); box-shadow: 0 0 0 2px var(--cp-highlight); }
-    .exit-row.active { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
+    .sub-row .queue-pick.chosen { border-color: var(--cp-pending); background: var(--cp-pending-soft); }
+    .sub-row .queue-pick.active { border: 2px solid var(--cp-chooser); background: var(--cp-chooser-soft); }
+    .sub-row .queue-pick.active b { color: var(--cp-chooser); }
+    .exit-row.active { border: 2px solid var(--cp-chooser); background: var(--cp-chooser-soft); }
     .sub-row .queue-pick b, .sub-row .queue-pick small, .exit-row b, .exit-row small { display: block; }
     .sub-row .queue-pick small, .exit-row small { font-size: .72rem; }
     .sub-row .quiet { flex: 0 0 auto; min-height: 42px; }
     .sub-row .remove-choice { flex: 0 0 44px; }
     .exit-line { display: flex; align-items: stretch; gap: 4px; }
     .exit-line .exit-row { flex: 1; min-width: 0; }
-    .remove-choice { display: grid; place-items: center; min-width: 44px; min-height: 44px; margin-top: 4px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-surface); color: var(--cp-accent); font-size: 1.1rem; font-weight: 700; }
+    .remove-choice { display: grid; place-items: center; min-width: 44px; min-height: 44px; margin-top: 4px; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-surface); color: var(--cp-text-muted); font-size: 1.1rem; font-weight: 700; }
     .exit-row { display: block; width: 100%; min-height: 42px; margin-top: 4px; padding: 3px 9px; text-align: left; border: 1px solid var(--cp-border); border-radius: 10px; background: var(--cp-bg-elevated); color: var(--cp-text); }
     .exit-row:disabled { opacity: 1; cursor: default; }
-    .exit-row.used { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
-    .exit-row.swap { border-style: dashed; border-color: var(--cp-border-strong); }
+    .exit-row.used, .exit-row.swap { border-color: var(--cp-pending); background: var(--cp-pending-soft); }
+    .exit-row.swap { border-style: dashed; }
     .sub-options { padding: 10px 0 6px; }
     .sub-options .choice-grid { margin-top: 6px; }
     .dialog-backdrop { position: fixed; z-index: 12; inset: 0; display: grid; place-items: center; padding: 16px; background: var(--cp-overlay); }
@@ -237,22 +247,24 @@
     .dialog-card .actions { justify-content: flex-end; }
     .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
     .choice { min-height: 54px; text-align: left; border: 1px solid var(--cp-border); background: var(--cp-bg-elevated); color: var(--cp-text); }
-    .choice.active { background: var(--cp-accent-soft); border-color: var(--cp-accent); color: var(--cp-accent); }
-    .choice.active small { color: var(--cp-accent); }
+    .choice[data-position] { border-color: var(--cp-chooser); }
+    .choice.active { background: var(--cp-pending-soft); border-color: var(--cp-pending); color: var(--cp-pending); }
+    .choice.active small { color: var(--cp-pending); }
     .choice:disabled { opacity: .65; cursor: not-allowed; }
     .choice b, .choice small { display: block; }
     .choice .position-choice { display: flex; align-items: center; gap: 7px; min-width: 0; }
     .position-choice .choice-player { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .choice-grid.starting-position-grid { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 6px; }
     .choice.starting-position-choice { display: grid; align-content: center; gap: 2px; min-height: 46px; padding: 7px 5px; text-align: center; }
-    .starting-position-choice .starting-position-label { color: var(--cp-accent); font-size: 1.05rem; line-height: 1.1; }
+    .starting-position-choice .starting-position-label { color: var(--cp-chooser); font-size: 1.05rem; line-height: 1.1; }
     .starting-position-choice .starting-position-occupant { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .72rem; font-weight: 600; }
-    .picker-callout { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0; padding: 12px 14px; border: 2px solid var(--cp-accent); border-radius: 12px; background: var(--cp-accent-soft); }
-    .picker-callout span { color: var(--cp-accent); font-size: .76rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
-    .picker-callout strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; font-size: 1.25rem; }
-    .sub-row .queue-pick .picker-status { color: var(--cp-accent); font-size: .76rem; font-weight: 850; letter-spacing: .04em; }
+    .picker-callout { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0; padding: 12px 14px; border: 2px solid var(--cp-chooser); border-radius: 12px; background: var(--cp-chooser-soft); }
+    .picker-callout span { color: var(--cp-chooser); font-size: .76rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+    .picker-callout strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; font-size: 1.25rem; color: var(--cp-chooser); }
+    .sub-row .queue-pick .picker-status { color: var(--cp-chooser); font-size: .76rem; font-weight: 850; letter-spacing: .04em; }
     .choice small { font-weight: 400; font-size: .73rem; }
-    .swap-card { padding: 12px; border: 1px solid var(--cp-accent); background: var(--cp-accent-soft); border-radius: 10px; margin-bottom: 8px; }
+    .swap-card { padding: 12px; border: 1px solid var(--cp-pending); background: var(--cp-pending-soft); border-radius: 10px; margin-bottom: 8px; }
+    .game-layout .quiet { color: var(--cp-text-muted); }
     .swap-card strong { display: block; }
     .pending-choice { display: flex; align-items: stretch; gap: 4px; margin-bottom: 8px; }
     .pending-choice .swap-card { flex: 1; min-width: 0; margin-bottom: 0; }
@@ -1062,15 +1074,16 @@
         ${pendingChange ? `<div class="pitch-change" role="status" aria-atomic="true">
           Pending change: ${esc(proposed.descriptions[0])} · Save to apply</div>` : ""}
         ${choosing ? `<div class="pitch-picker" role="status" aria-atomic="true">
-          ${selected ? `<span>Now picking</span><strong>${esc(selected)}</strong>` :
+          ${selected ? `<strong>${esc(selected)}</strong>, pick a position` :
             `<strong>${state.draft.kind === "halftime" && !state.draft.keeper
               ? "Choose goalkeeper" : "Choose a player"}</strong>`}</div>` : ""}
         <div class="midline"></div><div class="center-circle"></div><div class="goal"></div>
         ${positions.map((pos) => {
           const name = lineup.assignments[pos.code];
           const isOption = available.includes(pos.code);
-          const pending = pendingChange && name !== proposed.assignments[pos.code];
-          const destination = pending && name ? posFor(proposed.assignments, name) : "";
+          const pending = pendingChange ? name !== proposed.assignments[pos.code] :
+            state.draft && name !== state.draft.base.assignments[pos.code];
+          const destination = pendingChange && pending && name ? posFor(proposed.assignments, name) : "";
           const canPickPlayer = name && (!state.draft ||
             state.draft.kind === "lineup" ||
             (state.draft.kind === "planned" &&
@@ -1083,9 +1096,9 @@
             title="${esc(pos.label)}: ${esc(name || "Open")}"
             ${state.draft && !isOption && !canPickPlayer ? "disabled" : ""}>
             <b>${pos.display}</b><span>${esc(name || "Open")}</span>
-            ${pending ? `<small class="pending-label">Pending ${name
-              ? `→ ${esc(destination ? displayFor(destination) : "Bench")}`
-              : `· ${esc(proposed.assignments[pos.code] || "Open")}`}</small>` : ""}</button>`;
+            ${pending ? `<small class="pending-label">Pending${pendingChange
+              ? name ? ` → ${esc(destination ? displayFor(destination) : "Bench")}` : ` · ${esc(proposed.assignments[pos.code] || "Open")}`
+              : ""}</small>` : ""}</button>`;
         }).join("")}</div>`;
     }
     function home() {
@@ -1184,12 +1197,12 @@
         const canPick = !state.notReady.has(name) &&
           (position || picked.length < groupSize());
         return `<div class="sub-row">
-          <button class="queue-pick ${selected === name ? "active" : ""}" data-sub-player="${esc(name)}"
+          <button class="queue-pick ${operation ? "chosen" : ""} ${selected === name ? "active" : ""}" data-sub-player="${esc(name)}"
             data-assigned="${Boolean(position)}" ${canPick ? "" : "disabled"}
             aria-pressed="${selected === name}">
             <b>${esc(name)}${position ? ` · ${esc(displayFor(position))}` : ""}</b>
             <small class="${selected === name ? "picker-status" : ""}">${selected === name ? "NOW PICKING" :
-              position ? `For ${esc(out || "open spot")}` :
+              position ? `Pending · for ${esc(out || "open spot")}` :
               state.notReady.has(name) ? "Waiting · not choosing" :
               picked.length >= groupSize() ? "Next group" : "Tap to choose a position"}</small></button>
           ${!operation ? `<button class="quiet" data-ready="${esc(name)}">${state.notReady.has(name) ? "Ready" : "Wait"}</button>` : ""}
@@ -1208,8 +1221,8 @@
             '<div class="notice">No direct position is available.</div>'}
         </div>` : '<p class="subtext">Tap a ready bench player above to review their options.</p>';
       return `<aside class="draft-rail planned-rail"><div class="draft-scroll planned-scroll">
-        <section class="card accent planned-card"><div class="card-head"><h2>Planned substitutions</h2>
-          <span class="pill rose">${picked.length} / ${groupSize()} choosing</span></div>
+        <section class="card planned-card"><div class="card-head"><h2>Planned substitutions</h2>
+          <span class="pill">${picked.length} / ${groupSize()} chosen</span></div>
           <div class="bench-picker">${draft.base.benchQueue.filter((name) => state.arrivalOrder.includes(name))
             .map(chooser).join("") || '<div class="notice">No bench players here.</div>'}</div>
           <div class="bench-detail">${selectedOptions}</div>
@@ -1371,8 +1384,8 @@
             ? "Choose in arrival order · remove a pending choice to change it" :
           current && originalBench().includes(current) ? "Ready bench player chooses a position" :
           "Choose a position or move this player to the bench";
-        prompt = `<section class="card accent"><div class="card-head"><h2>${esc(titles[draft.kind])}</h2>
-          <span class="pill rose">Draft</span></div>
+        prompt = `<section class="card"><div class="card-head"><h2>${esc(titles[draft.kind])}</h2>
+          <span class="pill pending">Draft</span></div>
           <div class="subtext">${hint}</div><div class="picker-callout" aria-live="polite">
             <span>${current ? "Now picking" : "Next to pick"}</span>
             <strong>${current ? esc(current) : "Choose a player below"}</strong></div>
@@ -1407,7 +1420,7 @@
         </section>`;
       }
       const startingKeeper = draft.kind === "starting" ? `<section class="card">
-        <div class="card-head"><h2>Goalkeeper</h2><span class="pill ${draft.keeper ? "rose" : ""}">
+        <div class="card-head"><h2>Goalkeeper</h2><span class="pill ${draft.keeper ? "pending" : ""}">
           ${esc(draft.keeper || "Not chosen yet")}</span></div>
         <label class="subtext" for="starting-keeper">Choose any checked-in player, now or later</label>
         <select id="starting-keeper" style="width:100%;margin-top:6px">
@@ -1421,7 +1434,7 @@
         Boolean(draft.base.assignments.GK);
       const fixedChoices = Number(keeperChoice) + Number(restChoice);
       return `<aside class="draft-rail"><div class="draft-scroll">${startingKeeper}${prompt}
-        <section class="card"><div class="card-head"><h2>Pending</h2><span class="pill rose">${lineup.descriptions.length}</span></div>
+        <section class="card"><div class="card-head"><h2>Pending</h2><span class="pill pending">${lineup.descriptions.length}</span></div>
           ${lineup.descriptions.length ? lineup.descriptions.map((text, index) => {
             const remove = keeperChoice && index === 0 ? 'data-action="remove-keeper-choice"' :
               restChoice && index === 1 ? 'data-action="cancel-keeper-rest"' :
@@ -1457,8 +1470,8 @@
       return `<div class="grid cols game-layout"><section class="card field-card">
         <div class="card-head"><h2>${state.draft?.kind === "lineup" ? "Current lineup" :
           state.draft ? "Proposed lineup" : "On the field"}</h2>
-          ${state.draft?.kind === "lineup" ? '<span class="pill rose">Change not yet applied</span>' :
-            state.draft ? '<span class="pill rose">Not yet applied</span>' :
+          ${state.draft?.kind === "lineup" ? '<span class="pill pending">Change not yet applied</span>' :
+            state.draft ? '<span class="pill pending">Not yet applied</span>' :
             '<span class="subtext">Tap a player to change positions</span>'}</div>
         ${pitch(pitchLineup)}
         <div class="pitch-mini">${state.draft?.kind === "lineup"

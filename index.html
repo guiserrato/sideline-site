@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="sideline-runtime" content="web">
   <title>Sideline | Coach home</title>
   <script>
     (() => {
@@ -85,6 +86,13 @@
     .team-copy span { display: block; margin-top: 5px; color: var(--cp-text-muted); font-size: .88rem; }
     .team-arrow { display: grid; place-items: center; flex: 0 0 44px; height: 44px; border-radius: .625rem; background: var(--cp-accent-soft); color: var(--cp-accent); font-size: 1.4rem; }
     .footnote { margin-top: 24px; font-size: .85rem; }
+    .android-install { margin-top: 32px; padding: 20px; border: 1px solid var(--cp-border); border-radius: 16px; background: var(--cp-surface); }
+    .android-install h2 { margin: 0; font-size: 1.1rem; }
+    .android-install a { color: var(--cp-accent); }
+    .android-downloads { display: flex; flex-wrap: wrap; gap: 16px; }
+    .android-install .download { display: inline-block; padding: 12px 16px; border-radius: .625rem; background: var(--cp-accent); color: var(--cp-accent-fg); font-weight: 650; text-decoration: none; }
+    .android-install .download:hover { background: var(--cp-accent-hover); }
+    .android-install a:focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 3px; }
     @media (max-width: 560px) {
       main { padding-top: 32px; }
       .team { gap: 12px; min-height: 104px; padding: 12px; }
@@ -99,7 +107,7 @@
   <main><header>
       <span class="eyebrow">Sideline / Coach home</span>
       <h1>Ready for game day.</h1>
-      <p class="intro">Choose a team to manage its lineup and substitutions. Each team installs separately and keeps its games on this device.</p>
+      <p class="intro">Choose a team to manage its lineup and substitutions. <span id="install-description">Each team installs separately and keeps its games on this device.</span></p>
     </header>
     <section class="teams" aria-label="Your teams">
       <a class="team" href="golden-warriors/">
@@ -114,6 +122,17 @@
         <span class="team-arrow" aria-hidden="true">→</span></a>
     </section>
     <p class="footnote">Player rosters unlock inside each team workspace.</p>
+    <section class="android-install" aria-labelledby="android-title">
+      <h2 id="android-title">Sideline for Fire / Android</h2>
+      <p>Separate offline apps with their own team icons and saved games. Install either or both. Download in Silk, then allow Silk to install unknown apps when prompted. No Google Play required.</p>
+      <div class="android-downloads">
+        <div><a class="download" href="downloads/sideline-panthers.apk" download="sideline-panthers.apk">Panthers Subs APK &middot; 1.0.9</a>
+          <p><a href="downloads/sideline-panthers.apk.sha256">Panthers Subs SHA-256 checksum</a></p></div>
+        <div><a class="download" href="downloads/sideline-golden-warriors.apk" download="sideline-golden-warriors.apk">GW Subs APK &middot; 1.0.9</a>
+          <p><a href="downloads/sideline-golden-warriors.apk.sha256">GW Subs SHA-256 checksum</a></p></div>
+      </div>
+      <p>Open each app with its team's password. For updates, install the matching team's new APK over its existing app; do not uninstall or clear its data. Browser games do not transfer into the apps.</p>
+    </section>
   </main>
 </body>
 </html>

@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="sideline-runtime" content="web">
   <title>Sideline | Panthers</title>
   <meta name="theme-color" content="#b11f4b">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -297,7 +298,7 @@
         <input id="password" type="password" autocomplete="current-password" required>
         <button class="primary" type="submit">Unlock team</button></form>
       <p id="unlock-status" class="unlock-error" role="alert"></p>
-      <a href="../">Coach home</a>
+      <a data-web-only href="../">Coach home</a>
     </section>
   </div>
   <div id="app-shell" class="shell" hidden>
@@ -450,7 +451,8 @@
     }
     async function boot() {
       $("unlock").hidden = false;
-      if ("serviceWorker" in navigator) {
+      if (document.querySelector('meta[name="sideline-runtime"]').content !== "android" &&
+          "serviceWorker" in navigator) {
         navigator.serviceWorker.register("./sw.js").catch((error) => {
           const message = `Offline installation is unavailable: ${error.message}`;
           offlineError = message;
@@ -512,6 +514,19 @@
     function go(screen) {
       state.screen = screen; render(); window.scrollTo({ top: 0, behavior: "instant" });
     }
+    window.sidelineBack = () => {
+      if (!unlocked) return false;
+      if (state.draft?.pendingWait) {
+        state.draft.pendingWait = null;
+        render();
+        return true;
+      }
+      if (state.screen !== "home") {
+        go("home");
+        return true;
+      }
+      return false;
+    };
     function newGame() {
       if ((state.gameStarted || state.arrivalOrder.length || state.draft) &&
           !window.confirm(state.gameStarted
@@ -1063,7 +1078,7 @@
           <div><strong>${initialPlayers.length}</strong><small>Roster</small></div>
           <div><strong>${state.savedGames.length}</strong><small>Saved games</small></div></div>
         <p class="muted">Game changes and temporary players stay on this device. Published roster updates arrive with the site.</p>
-        <a href="../">← Coach home</a>
+        <a data-web-only href="../">← Coach home</a>
       </section></div>`;
     }
     function setup() {

@@ -162,6 +162,10 @@
     .queue-item .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .position-code { flex: 0 0 auto; min-width: 38px; padding: 4px 5px; border: 1px solid var(--cp-border); border-radius: 6px; background: var(--cp-surface-soft); color: var(--cp-text); font-size: .88rem; font-weight: 850; text-align: center; }
     .queue-item .quiet { min-height: 34px; font-size: .76rem; }
+    .queue-item [data-queue-move], .queue-item [data-move] { min-width: 44px; min-height: 44px; flex: 0 0 44px; font-size: 1.2rem; border: 1px solid var(--cp-border); border-radius: 8px; }
+    .sub-count-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .sub-count-controls button { min-width: 44px; min-height: 44px; }
+    .sub-count-controls output { min-width: 110px; text-align: center; font-weight: 750; }
     .queue-pick { width: 100%; padding: 0; text-align: left; border: 0; background: transparent; color: var(--cp-text); }
     .queue-pick:disabled { opacity: 1; }
     .pitch { position: relative; width: 100%; height: clamp(380px, 74dvh, 780px); overflow: hidden; border: 2px solid var(--cp-border-strong); border-radius: 10px; background: repeating-linear-gradient(0deg, var(--cp-surface-soft), var(--cp-surface-soft) 52px, var(--cp-bg-elevated) 52px, var(--cp-bg-elevated) 104px); }
@@ -392,7 +396,7 @@
       arrivalOrder: [], notReady: new Set(),
       assignments: Object.fromEntries(positions.map((pos) => [pos.code, null])),
       fieldQueue: [], benchQueue: [],
-      gameStarted: false, draft: null, selected: null, round: 0, half: 1,
+      gameStarted: false, draft: null, selected: null, round: 0, half: 1, subsPerPlan: null,
       events: [], undoStack: [], savedGames: []
     };
     const $ = (id) => document.getElementById(id);
@@ -589,7 +593,7 @@
       state.undoStack.push({
         lineup: cloneLineup(state), players: [...state.players],
         arrivalOrder: [...state.arrivalOrder], notReady: new Set(state.notReady),
-        round: state.round, half: state.half,
+        round: state.round, half: state.half, subsPerPlan: state.subsPerPlan,
         gameStarted: state.gameStarted, events: [...state.events],
         positionLayout: positions.map((pos) => ({ ...pos })), customPositions: state.customPositions
       });
@@ -646,7 +650,7 @@
       state.gameStarted = false; state.draft = null; state.selected = null;
       state.assignments = Object.fromEntries(positions.map((pos) => [pos.code, null]));
       state.fieldQueue = []; state.benchQueue = []; state.half = 1; state.round = 0;
-      state.events = []; state.undoStack = [];
+      state.events = []; state.undoStack = []; state.subsPerPlan = null;
     }
     function startLineup() {
       if (state.gameStarted || state.draft) return;
@@ -1062,6 +1066,12 @@
       state.selected = null;
       go("game");
     }
+    function plannedGroupSize(lineup, notReady = state.notReady) {
+      const ready = lineup.benchQueue.filter((player) => !notReady.has(player)).length;
+      const limit = state.subsPerPlan ??
+        (ready > fieldPositions.length / 2 ? Math.ceil(ready / 2) : ready);
+      return Math.min(ready, fieldPositions.length, limit);
+    }
     function groupSize() {
       const ready = readyBench(state.draft.base).filter((player) =>
         player !== state.draft.keeper).length;
@@ -1072,7 +1082,7 @@
         const group = entrants > fieldPositions.length / 2 ? Math.ceil(entrants / 2) : entrants;
         return Math.max(0, group - outgoingKeeper);
       }
-      return ready > fieldPositions.length / 2 ? Math.ceil(ready / 2) : ready;
+      return plannedGroupSize(state.draft.base);
     }
     function eligibleBench() {
       if (!state.draft || state.draft.kind === "starting") return [];
@@ -1116,8 +1126,7 @@
       const canceled = [];
       const notReady = new Set(state.notReady);
       if (waitingPlayer) notReady.add(waitingPlayer);
-      const ready = draft.base.benchQueue.filter((player) => !notReady.has(player)).length;
-      const size = ready > fieldPositions.length / 2 ? Math.ceil(ready / 2) : ready;
+      const size = plannedGroupSize(draft.base, notReady);
       const exitCount = Math.max(0, size - openFieldPositions(draft.base.assignments).length);
       const offered = () => exitCount ? fieldOrder.slice(-exitCount).reverse() : [];
       for (const change of exits) {
@@ -1376,10 +1385,9 @@
         new Set(accounted).size === accounted.length &&
         accounted.every((player) => state.arrivalOrder.includes(player));
     }
-    function queue(lineup, side, interactive = false) {
+    function queue(lineup, side, interactive = false, reorder = false) {
       const list = side === "field" ? lineup.fieldQueue : lineup.benchQueue;
-      const ready = readyBench(state).length;
-      const count = ready > fieldPositions.length / 2 ? Math.ceil(ready / 2) : ready;
+      const count = plannedGroupSize(state);
       const exits = Math.max(0, count - openFieldPositions(lineup.assignments).length);
       const due = state.draft ? dueOut() : exits ? state.fieldQueue.slice(-exits) : [];
       const next = !state.draft ? readyBench(state).slice(0, count) : [];
@@ -1412,7 +1420,12 @@
             <button class="queue-pick name" data-select="${esc(name)}"
               ${side === "field" ? `aria-label="${esc(labelFor(posFor(lineup.assignments, name)) || "Field")} · ${esc(name)}"` : ""}
               ${canSelect ? "" : "disabled"}>${esc(name)}</button>
-            ${side === "field" ? "" :
+            ${reorder ? `<button class="quiet" data-queue-move="${esc(name)}" data-queue="${side}" data-direction="-1"
+              ${state.draft || i === 0 ? "disabled" : ""} aria-label="Move ${esc(name)} up in ${side} queue">↑</button>
+              <button class="quiet" data-queue-move="${esc(name)}" data-queue="${side}" data-direction="1"
+              ${state.draft || i === list.length - 1 ? "disabled" : ""} aria-label="Move ${esc(name)} down in ${side} queue">↓</button>` : ""}
+            ${reorder && waiting ? '<span class="pill warning">Waiting</span>' : ""}
+            ${side === "field" || reorder ? "" :
               skipped ? `<button class="quiet" data-resume="${esc(name)}">Include</button>` :
               canChangeReadiness ? `<button class="quiet" data-ready="${esc(name)}">${waiting ? "Ready" : "Wait"}</button>` :
               waiting ? `<span class="pill warning">${comingOff ? "Waiting on save" : "Waiting"}</span>` :
@@ -1486,6 +1499,24 @@
         <a data-web-only href="../">← Coach home</a>
       </section></div>`;
     }
+    function substitutionSettings() {
+      const count = state.subsPerPlan ?? plannedGroupSize(state);
+      return `<section class="card"><h2>Substitution planning</h2>
+        <div id="subs-per-plan-label">Players per sub plan</div>
+        <div class="sub-count-controls" role="group" aria-labelledby="subs-per-plan-label">
+          <button class="secondary" data-subs-step="-1" aria-label="Decrease players per sub plan"
+            ${state.draft || count <= 1 ? "disabled" : ""}>−</button>
+          <output id="subs-per-plan" aria-live="polite">${state.subsPerPlan == null ? `Default (${count})` : count}</output>
+          <button class="secondary" data-subs-step="1" aria-label="Increase players per sub plan"
+            ${state.draft || count >= fieldPositions.length ? "disabled" : ""}>+</button>
+          ${state.subsPerPlan != null ? `<button class="secondary" data-action="reset-subs"
+            ${state.draft ? "disabled" : ""}>Reset</button>` : ""}
+        </div>
+        <p class="subtext">Max players in, including open spots.<br>
+          Reset restores auto. Halftime unchanged.</p>
+        ${state.draft ? '<p class="subtext">Save or discard the current draft before changing queue order or the sub limit.</p>' : ""}
+      </section>`;
+    }
     function setup() {
       const present = state.arrivalOrder;
       const ordered = present.filter((player) => player !== state.draft?.keeper);
@@ -1505,7 +1536,7 @@
           ? "Adding a player puts them on the bench. Removing a field player opens their position; assign someone else on Game."
             : "Everyone starts Not here. Check in arrivals here, even while choosing positions on Game."}</div>
       </section><div class="stack"><section class="card"><div class="card-head"><h2>${state.gameStarted ? "Field queue" : "Starting order"}</h2><span class="pill">${positions.length}v${positions.length}</span></div>
-        <p class="muted">${state.gameStarted ? "Field and bench assignments are made on Game." :
+        <p class="muted">${state.gameStarted ? "Move players up or down to adjust who comes off next. Positions stay unchanged; the bottom player is next out. Changes save immediately and can be undone in History." :
           "Checked-in players choose in arrival order. Choose the goalkeeper on Game whenever you're ready."}</p>
         <div class="subtext">Goalkeeper: ${esc(state.draft?.keeper || state.assignments.GK || "Not chosen yet")}</div>
         ${editable ? `<div class="stack" style="margin-top:12px">${ordered.length ? ordered.slice(0, fieldPositions.length).map((player, i) =>
@@ -1513,17 +1544,49 @@
             <button class="quiet" data-move="${esc(player)}" ${i === 0 ? "disabled" : ""} aria-label="Move ${esc(player)} earlier">↑</button></div>`).join("") :
             '<div class="notice">No field players checked in yet.</div>'}</div>
           ${ordered.length > fieldPositions.length ? `<div class="subtext" style="margin-top:12px">Bench at kickoff, in order: ${ordered.slice(fieldPositions.length).map(esc).join(", ")}</div>` : ""}` :
-          `<div style="margin-top:12px">${queue(state, "field")}</div>`}
+          `<div style="margin-top:12px">${queue(state, "field", false, state.gameStarted)}</div>`}
         <div class="actions">${editable && !state.draft
           ? button("Choose starting positions →", "start-lineup", "primary")
           : button("Back to Game →", "game", "primary")}</div>
-      </section><section class="card soft"><h2>Positions for this game</h2>
+      </section>${state.gameStarted ? `<section class="card"><h2>Bench order</h2>
+        <p class="muted">Top ready player chooses first. Moving a player does not change Ready / Waiting. Changes save immediately and can be undone in History.</p>
+        ${queue(state, "bench", false, true)}</section>` : ""}
+      <section class="card soft"><h2>Positions for this game</h2>
         <div class="tags">${positions.map((pos) => `<span class="pill">${pos.display}</span>`).join("")}</div>
         <div class="notice">This team currently uses the ${positions.length}v${positions.length} position layout.</div>
         <div class="actions">${button("Choose formation", "edit-formation", "secondary",
           state.draft ? "disabled" : "")}</div>
         ${state.draft ? '<p class="subtext">Save or discard pending lineup choices to edit the formation.</p>' : ""}
-      </section></div></div>`;
+      </section>${substitutionSettings()}</div></div>`;
+    }
+    function moveQueuePlayer(side, player, direction) {
+      if (!state.gameStarted || state.draft) {
+        notify("Save or discard the current draft before changing queue order."); return;
+      }
+      const list = side === "field" ? state.fieldQueue : side === "bench" ? state.benchQueue : null;
+      const index = list?.indexOf(player) ?? -1;
+      const target = index + direction;
+      if (!list || ![-1, 1].includes(direction) || index < 0 || target < 0 || target >= list.length) {
+        notify("Choose an available queue move."); return;
+      }
+      rememberChange();
+      [list[index], list[target]] = [list[target], list[index]];
+      state.events.unshift(`${side === "field" ? "Field" : "Bench"} queue reordered: ${list.join(", ")}`);
+      render();
+    }
+    function setSubsPerPlan(value) {
+      if (state.draft) {
+        notify("Save or discard the current draft before changing the sub limit."); return;
+      }
+      const count = value === "" ? null : Number(value);
+      if (count !== null && (!Number.isInteger(count) || count < 1 || count > fieldPositions.length)) {
+        notify("Choose Automatic or a number within the field capacity."); render(); return;
+      }
+      if (count === state.subsPerPlan) return;
+      rememberChange();
+      state.subsPerPlan = count;
+      state.events.unshift(`Players per sub plan: ${count ?? "Automatic"}`);
+      render();
     }
     function livePanel(lineup) {
       return `<aside class="live-rail">
@@ -2250,7 +2313,19 @@
         }
         return;
       }
+      if (element.dataset.queueMove) {
+        moveQueuePlayer(element.dataset.queue, element.dataset.queueMove, Number(element.dataset.direction));
+        return;
+      }
+      if (element.dataset.subsStep !== undefined) {
+        const step = Number(element.dataset.subsStep);
+        if (![-1, 1].includes(step)) { notify("Choose increase or decrease."); return; }
+        setSubsPerPlan(String(Math.min(fieldPositions.length,
+          (state.subsPerPlan ?? plannedGroupSize(state)) + step)));
+        return;
+      }
       const action = element.dataset.action;
+      if (action === "reset-subs") { setSubsPerPlan(""); return; }
       if (pages[action]) { go(action); return; }
       if (action === "new-game") { newGame(); return; }
       if (action === "edit-formation") { editFormation(); return; }
@@ -2309,6 +2384,7 @@
         state.arrivalOrder = previous.arrivalOrder;
         state.notReady = previous.notReady;
         state.round = previous.round; state.half = previous.half;
+        state.subsPerPlan = previous.subsPerPlan ?? null;
         state.gameStarted = previous.gameStarted; state.events = previous.events;
         if (previous.positionLayout) {
           positions = previous.positionLayout;

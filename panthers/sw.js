@@ -1,4 +1,4 @@
-const CACHE = "sideline-panthers-9ece963143973260";
+const CACHE = "sideline-panthers-bbc726f5cf4584fa";
 const FILES = ["./", "./index.html", "./roster.enc.json", "./manifest.webmanifest", "./logo.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(FILES)).then(() => self.skipWaiting()));

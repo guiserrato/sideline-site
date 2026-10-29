@@ -397,6 +397,7 @@
       assignments: Object.fromEntries(positions.map((pos) => [pos.code, null])),
       fieldQueue: [], benchQueue: [],
       gameStarted: false, draft: null, selected: null, round: 0, half: 1, subsPerPlan: null,
+      extraSubChoices: 0, benchTurns: null,
       events: [], undoStack: [], savedGames: []
     };
     const $ = (id) => document.getElementById(id);
@@ -594,9 +595,12 @@
         lineup: cloneLineup(state), players: [...state.players],
         arrivalOrder: [...state.arrivalOrder], notReady: new Set(state.notReady),
         round: state.round, half: state.half, subsPerPlan: state.subsPerPlan,
+        extraSubChoices: state.extraSubChoices,
+        benchTurns: state.benchTurns ? { ...state.benchTurns } : null,
         gameStarted: state.gameStarted, events: [...state.events],
         positionLayout: positions.map((pos) => ({ ...pos })), customPositions: state.customPositions
       });
+      state.benchTurns = rotationCounts();
     }
     function notify(message) {
       const el = $("toast"); el.textContent = message; el.classList.remove("hidden");
@@ -651,6 +655,7 @@
       state.assignments = Object.fromEntries(positions.map((pos) => [pos.code, null]));
       state.fieldQueue = []; state.benchQueue = []; state.half = 1; state.round = 0;
       state.events = []; state.undoStack = []; state.subsPerPlan = null;
+      state.extraSubChoices = 0; state.benchTurns = null;
     }
     function startLineup() {
       if (state.gameStarted || state.draft) return;
@@ -721,6 +726,7 @@
         fieldPositions = positions.filter((pos) => pos.code !== "GK");
         state.positionLayout = positions;
         state.customPositions = true;
+        recordBenchTurns(lineup);
         Object.assign(state, cloneLineup(lineup));
         for (const player of benched) state.notReady.add(player);
         state.selected = null;
@@ -1100,8 +1106,54 @@
           chosenEntrants().length >= groupSize()) return null;
       return eligibleBench().find((player) => lineup.benchQueue.includes(player)) || null;
     }
+    function rotationCounts() {
+      const counts = Object.assign(Object.create(null), state.benchTurns);
+      const known = state.fieldQueue.filter((player) => counts[player] !== undefined)
+        .map((player) => counts[player]);
+      const baseline = known.length ? Math.min(...known) : 0;
+      for (const player of [...state.fieldQueue, state.assignments.GK, ...state.benchQueue].filter(Boolean)) {
+        if (counts[player] === undefined) counts[player] = baseline + Number(state.benchQueue.includes(player));
+      }
+      return counts;
+    }
+    function recordBenchTurns(lineup, starting = false) {
+      if (starting) {
+        state.benchTurns = Object.fromEntries([
+          ...lineup.fieldQueue, lineup.assignments.GK, ...lineup.benchQueue
+        ].filter(Boolean).map((player) => [player, Number(lineup.benchQueue.includes(player))]));
+        return;
+      }
+      const counts = rotationCounts();
+      for (const player of [...state.fieldQueue, state.assignments.GK].filter(Boolean)) {
+        if (lineup.benchQueue.includes(player)) counts[player]++;
+      }
+      state.benchTurns = counts;
+    }
+    function fairExitPool(base, fieldOrder, operations = []) {
+      const lineup = cloneLineup(base);
+      for (const op of operations) applyOperation(lineup, op);
+      const remaining = fieldOrder.filter((player) => lineup.fieldQueue.includes(player));
+      const counts = rotationCounts();
+      const minimum = Math.min(...remaining.map((player) => counts[player] ?? 0));
+      return remaining.filter((player) => (counts[player] ?? 0) === minimum).reverse();
+    }
+    function plannedExitChoices(base, fieldOrder, size, operations = []) {
+      const count = Math.max(0, size - openFieldPositions(base.assignments).length);
+      if (!count) return [];
+      if (!state.extraSubChoices) return fieldOrder.slice(-count).reverse();
+      const lineup = cloneLineup(base);
+      for (const op of operations) applyOperation(lineup, op);
+      const used = fieldOrder.filter((player) => !lineup.fieldQueue.includes(player)).reverse();
+      const needed = Math.max(0, count - used.length);
+      return [...used, ...(needed ? fairExitPool(base, fieldOrder, operations)
+        .slice(0, needed + state.extraSubChoices) : [])];
+    }
     function dueOut() {
       if (!state.draft || !["planned", "halftime"].includes(state.draft.kind)) return [];
+      if (state.draft.kind === "planned") {
+        return plannedExitChoices(state.draft.base, state.draft.fieldOrder,
+          groupSize(), state.draft.operations);
+      }
       const keeperNeedsFieldSpot = state.draft.kind === "halftime" &&
         state.draft.base.assignments.GK &&
         !state.draft.restOutgoingKeeper &&
@@ -1127,14 +1179,15 @@
       const notReady = new Set(state.notReady);
       if (waitingPlayer) notReady.add(waitingPlayer);
       const size = plannedGroupSize(draft.base, notReady);
-      const exitCount = Math.max(0, size - openFieldPositions(draft.base.assignments).length);
-      const offered = () => exitCount ? fieldOrder.slice(-exitCount).reverse() : [];
+      const offered = (operations = []) =>
+        plannedExitChoices(draft.base, fieldOrder, size, operations);
       for (const change of exits) {
         const current = offered();
         const from = fieldOrder.indexOf(change.outgoing);
         const to = fieldOrder.indexOf(change.replacement);
         if (from < 0 || to < 0 || !current.includes(change.outgoing) ||
-            current.includes(change.replacement)) {
+            current.includes(change.replacement) ||
+            state.extraSubChoices && !fairExitPool(draft.base, fieldOrder).includes(change.replacement)) {
           canceled.push({ type: "exit", change }); continue;
         }
         [fieldOrder[from], fieldOrder[to]] = [fieldOrder[to], fieldOrder[from]];
@@ -1159,7 +1212,7 @@
             (op.wasField === undefined || Boolean(current) === op.wasField) &&
             (op.position !== "GK" || !occupant || occupant === op.player))) &&
           (!entering || (!notReady.has(op.player) &&
-            chosen.size < size && (!occupant || offered().includes(occupant))));
+            chosen.size < size && (!occupant || offered(operations).includes(occupant))));
         if (!valid) { canceled.push({ type: "operation", op }); continue; }
         applyOperation(lineup, op);
         operations.push(op);
@@ -1388,8 +1441,7 @@
     function queue(lineup, side, interactive = false, reorder = false) {
       const list = side === "field" ? lineup.fieldQueue : lineup.benchQueue;
       const count = plannedGroupSize(state);
-      const exits = Math.max(0, count - openFieldPositions(lineup.assignments).length);
-      const due = state.draft ? dueOut() : exits ? state.fieldQueue.slice(-exits) : [];
+      const due = state.draft ? dueOut() : plannedExitChoices(state, state.fieldQueue, count);
       const next = !state.draft ? readyBench(state).slice(0, count) : [];
       const active = selectedPlayer(lineup);
       const pendingWaiting = state.draft?.kind === "lineup" ? pendingLineupWaiting(lineup) : new Set();
@@ -1514,6 +1566,16 @@
         </div>
         <p class="subtext">Max players in, including open spots.<br>
           Reset restores auto. Halftime unchanged.</p>
+        <div id="extra-sub-choices-label">Extra choices</div>
+        <div class="sub-count-controls" role="group" aria-labelledby="extra-sub-choices-label">
+          <button class="secondary" data-extra-subs-step="-1" aria-label="Decrease extra substitution choices"
+            ${state.draft || !state.extraSubChoices ? "disabled" : ""}>−</button>
+          <output id="extra-sub-choices" aria-live="polite">${state.extraSubChoices || 0}</output>
+          <button class="secondary" data-extra-subs-step="1" aria-label="Increase extra substitution choices"
+            ${state.draft || state.extraSubChoices >= fieldPositions.length - 1 ? "disabled" : ""}>+</button>
+        </div>
+        <p class="subtext">More players to choose from, not more subs.<br>
+          Fewer rests first; 0 keeps strict queue order.</p>
         ${state.draft ? '<p class="subtext">Save or discard the current draft before changing queue order or the sub limit.</p>' : ""}
       </section>`;
     }
@@ -1655,8 +1717,8 @@
             .map(chooser).join("") || '<div class="notice">No bench players here.</div>'}</div>
           <div class="bench-detail">${selectedOptions}</div>
         </section>
-        <section class="card"><div class="card-head"><h2>Next out <small>· tap to change</small></h2>
-          <span class="pill">${due.length} out · ${open.length} open</span></div>
+        <section class="card"><div class="card-head"><h2>${state.extraSubChoices ? "Exit choices" : "Next out"} <small>· tap to change</small></h2>
+          <span class="pill">${due.length} ${state.extraSubChoices ? "choices" : "out"} · ${open.length} open</span></div>
           ${open.map((code) => {
             const entrant = picked.find((op) => op.position === code && !op.expectedOccupant &&
               lineup.assignments[code] === op.player);
@@ -1697,7 +1759,8 @@
             lineup.fieldQueue.includes(due[draft.outgoingEdit]) ?
             `<div class="sub-options"><div class="subtext">Replace ${esc(due[draft.outgoingEdit])} with:</div>
               ${draft.fieldOrder.filter((name) => !due.includes(name) &&
-                lineup.fieldQueue.includes(name)).reverse().map((name) =>
+                lineup.fieldQueue.includes(name) && (!state.extraSubChoices ||
+                  fairExitPool(draft.base, draft.fieldOrder, draft.operations).includes(name))).reverse().map((name) =>
                 `<button class="exit-row" data-exit-replacement="${esc(name)}">
                   <b>${esc(name)} · ${esc(displayFor(posFor(lineup.assignments, name)))}</b>
                   <small>Take this exit slot · other queue positions stay put</small></button>`).join("") ||
@@ -2056,6 +2119,8 @@
       const lineup = preview();
       if (slot == null || !outgoing || !lineup.fieldQueue.includes(outgoing) ||
           !state.draft.fieldOrder.includes(replacement) ||
+          state.extraSubChoices && !fairExitPool(state.draft.base,
+            state.draft.fieldOrder, state.draft.operations).includes(replacement) ||
           dueOut().includes(replacement) || !lineup.fieldQueue.includes(replacement)) {
         notify("Choose a field player not already due out."); return;
       }
@@ -2090,6 +2155,7 @@
       if (!canConfirm(lineup)) { notify("Resolve the selected player or queue before saving."); return; }
       const kind = state.draft.kind;
       rememberChange();
+      recordBenchTurns(lineup, kind === "starting");
       state.assignments = lineup.assignments;
       state.fieldQueue = lineup.fieldQueue;
       state.benchQueue = lineup.benchQueue;
@@ -2324,6 +2390,20 @@
           (state.subsPerPlan ?? plannedGroupSize(state)) + step)));
         return;
       }
+      if (element.dataset.extraSubsStep !== undefined) {
+        if (state.draft) { notify("Save or discard the current draft before changing extra choices."); return; }
+        const step = Number(element.dataset.extraSubsStep);
+        const current = state.extraSubChoices || 0;
+        const count = Math.min(fieldPositions.length - 1, current + step);
+        if (![-1, 1].includes(step) || count < 0 ||
+            step === 1 && current >= fieldPositions.length - 1) {
+          notify("Choose extra choices within the field capacity."); return;
+        }
+        rememberChange();
+        state.extraSubChoices = count;
+        state.events.unshift(`Extra substitution choices: ${count}`);
+        render(); return;
+      }
       const action = element.dataset.action;
       if (action === "reset-subs") { setSubsPerPlan(""); return; }
       if (pages[action]) { go(action); return; }
@@ -2385,6 +2465,8 @@
         state.notReady = previous.notReady;
         state.round = previous.round; state.half = previous.half;
         state.subsPerPlan = previous.subsPerPlan ?? null;
+        state.extraSubChoices = previous.extraSubChoices ?? 0;
+        state.benchTurns = previous.benchTurns ? { ...previous.benchTurns } : null;
         state.gameStarted = previous.gameStarted; state.events = previous.events;
         if (previous.positionLayout) {
           positions = previous.positionLayout;

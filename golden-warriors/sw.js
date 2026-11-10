@@ -1,4 +1,4 @@
-const CACHE = "sideline-golden-warriors-27d571e758d5e032";
+const CACHE = "sideline-golden-warriors-d26099ff094ea061";
 const FILES = ["./", "./index.html", "./roster.enc.json", "./manifest.webmanifest", "./logo.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(FILES)).then(() => self.skipWaiting()));

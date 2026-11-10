@@ -397,7 +397,7 @@
       assignments: Object.fromEntries(positions.map((pos) => [pos.code, null])),
       fieldQueue: [], benchQueue: [],
       gameStarted: false, draft: null, selected: null, round: 0, half: 1, subsPerPlan: null,
-      extraSubChoices: 0, benchTurns: null,
+      extraSubChoices: 0, benchTurns: null, benchGroups: null,
       events: [], undoStack: [], savedGames: []
     };
     const $ = (id) => document.getElementById(id);
@@ -597,10 +597,12 @@
         round: state.round, half: state.half, subsPerPlan: state.subsPerPlan,
         extraSubChoices: state.extraSubChoices,
         benchTurns: state.benchTurns ? { ...state.benchTurns } : null,
+        benchGroups: state.benchGroups ? state.benchGroups.map((group) => [...group]) : null,
         gameStarted: state.gameStarted, events: [...state.events],
         positionLayout: positions.map((pos) => ({ ...pos })), customPositions: state.customPositions
       });
       state.benchTurns = rotationCounts();
+      state.benchGroups = benchGroupsFor(state);
     }
     function notify(message) {
       const el = $("toast"); el.textContent = message; el.classList.remove("hidden");
@@ -656,6 +658,7 @@
       state.fieldQueue = []; state.benchQueue = []; state.half = 1; state.round = 0;
       state.events = []; state.undoStack = []; state.subsPerPlan = null;
       state.extraSubChoices = 0; state.benchTurns = null;
+      state.benchGroups = null;
     }
     function startLineup() {
       if (state.gameStarted || state.draft) return;
@@ -727,6 +730,7 @@
         state.positionLayout = positions;
         state.customPositions = true;
         recordBenchTurns(lineup);
+        recordBenchGroups(lineup, true);
         Object.assign(state, cloneLineup(lineup));
         for (const player of benched) state.notReady.add(player);
         state.selected = null;
@@ -1072,11 +1076,35 @@
       state.selected = null;
       go("game");
     }
+    function benchGroupsFor(lineup) {
+      const groups = (state.benchGroups || [lineup.benchQueue]).map((group) =>
+        lineup.benchQueue.filter((player) => group.includes(player))).filter((group) => group.length);
+      const grouped = new Set(groups.flat());
+      const added = lineup.benchQueue.filter((player) => !grouped.has(player));
+      if (added.length) groups.push(added);
+      return groups;
+    }
+    function automaticBenchPlayers(lineup, notReady = state.notReady) {
+      return benchGroupsFor(lineup).map((group) => group.filter((player) => !notReady.has(player)))
+        .find((group) => group.length) || [];
+    }
+    function recordBenchGroups(lineup, regroup = false) {
+      if (regroup) {
+        state.benchGroups = lineup.benchQueue.length ? [[...lineup.benchQueue]] : [];
+        return;
+      }
+      const groups = benchGroupsFor(state).map((group) =>
+        group.filter((player) => lineup.benchQueue.includes(player))).filter((group) => group.length);
+      const outgoing = lineup.benchQueue.filter((player) => !state.benchQueue.includes(player));
+      if (outgoing.length) groups.push(outgoing);
+      state.benchGroups = groups;
+    }
     function plannedGroupSize(lineup, notReady = state.notReady) {
       const ready = lineup.benchQueue.filter((player) => !notReady.has(player)).length;
       const limit = state.subsPerPlan ??
         (ready > fieldPositions.length / 2 ? Math.ceil(ready / 2) : ready);
-      return Math.min(ready, fieldPositions.length, limit);
+      const available = state.subsPerPlan == null ? automaticBenchPlayers(lineup, notReady).length : ready;
+      return Math.min(available, fieldPositions.length, limit);
     }
     function groupSize() {
       const ready = readyBench(state.draft.base).filter((player) =>
@@ -1097,6 +1125,9 @@
       if (state.draft.kind === "lineup") {
         const waiting = pendingLineupWaiting(preview());
         return state.draft.base.benchQueue.filter((player) => !waiting.has(player));
+      }
+      if (state.draft.kind === "planned" && state.subsPerPlan == null) {
+        return automaticBenchPlayers(state.draft.base);
       }
       if (state.draft.kind === "planned" || state.draft.kind === "halftime") return ready;
       return ready.slice(0, groupSize());
@@ -1179,6 +1210,8 @@
       const notReady = new Set(state.notReady);
       if (waitingPlayer) notReady.add(waitingPlayer);
       const size = plannedGroupSize(draft.base, notReady);
+      const eligible = state.subsPerPlan == null ? automaticBenchPlayers(draft.base, notReady) :
+        draft.base.benchQueue.filter((player) => !notReady.has(player));
       const offered = (operations = []) =>
         plannedExitChoices(draft.base, fieldOrder, size, operations);
       for (const change of exits) {
@@ -1211,7 +1244,7 @@
             (op.expectedOccupant === undefined || occupant === op.expectedOccupant) &&
             (op.wasField === undefined || Boolean(current) === op.wasField) &&
             (op.position !== "GK" || !occupant || occupant === op.player))) &&
-          (!entering || (!notReady.has(op.player) &&
+          (!entering || (eligible.includes(op.player) &&
             chosen.size < size && (!occupant || offered(operations).includes(occupant))));
         if (!valid) { canceled.push({ type: "operation", op }); continue; }
         applyOperation(lineup, op);
@@ -1318,6 +1351,22 @@
       lineup.assignments[op.position] = op.player;
       return `${op.player} → ${occupant || "Open"} · ${displayFor(op.position)}`;
     }
+    function orderPlannedQueues(lineup) {
+      const draft = state.draft;
+      if (draft?.kind !== "planned") return;
+      const ready = readyBench(draft.base).length;
+      if (!ready || ready > fieldPositions.length / 2 ||
+          plannedGroupSize(draft.base) !== ready) return;
+      const incoming = draft.base.benchQueue.filter((player) => lineup.fieldQueue.includes(player));
+      if (!incoming.length) return;
+      // A shared divisor can lock players into the same choosing slots without a shift.
+      let divisor = fieldPositions.length, remainder = ready;
+      while (remainder) [divisor, remainder] = [remainder, divisor % remainder];
+      if (divisor > 1) incoming.push(incoming.shift());
+      lineup.fieldQueue = [...incoming, ...lineup.fieldQueue.filter((player) => !incoming.includes(player))];
+      const outgoing = draft.fieldOrder.filter((player) => lineup.benchQueue.includes(player));
+      lineup.benchQueue = [...lineup.benchQueue.filter((player) => !outgoing.includes(player)), ...outgoing];
+    }
     function preview() {
       const lineup = cloneLineup(state.draft?.base || state);
       if (state.draft?.fieldOrder) lineup.fieldQueue = [...state.draft.fieldOrder];
@@ -1348,6 +1397,7 @@
         }
       }
       for (const op of state.draft?.operations || []) descriptions.push(applyOperation(lineup, op));
+      orderPlannedQueues(lineup);
       if (state.draft?.kind === "halftime" && state.draft.keeper) {
         const oldKeeper = state.draft.base.assignments.GK;
         if (oldKeeper && lineup.fieldQueue.includes(oldKeeper)) {
@@ -1442,7 +1492,8 @@
       const list = side === "field" ? lineup.fieldQueue : lineup.benchQueue;
       const count = plannedGroupSize(state);
       const due = state.draft ? dueOut() : plannedExitChoices(state, state.fieldQueue, count);
-      const next = !state.draft ? readyBench(state).slice(0, count) : [];
+      const next = !state.draft ? (state.subsPerPlan == null ? automaticBenchPlayers(state) :
+        readyBench(state)).slice(0, count) : [];
       const active = selectedPlayer(lineup);
       const pendingWaiting = state.draft?.kind === "lineup" ? pendingLineupWaiting(lineup) : new Set();
       return `<div class="queue-label">${side === "field" ? "TOP · LAST OFF" : "TOP · FIRST CHOICE"}</div>
@@ -1633,6 +1684,7 @@
       }
       rememberChange();
       [list[index], list[target]] = [list[target], list[index]];
+      if (side === "bench") state.benchGroups = [[...state.benchQueue]];
       state.events.unshift(`${side === "field" ? "Field" : "Bench"} queue reordered: ${list.join(", ")}`);
       render();
     }
@@ -1684,8 +1736,9 @@
         const operation = picked.find((op) => op.player === name);
         const position = posFor(lineup.assignments, name);
         const out = operation?.expectedOccupant;
+        const eligible = eligibleBench().includes(name);
         const canPick = !state.notReady.has(name) &&
-          (position || picked.length < groupSize());
+          (position || eligible && picked.length < groupSize());
         return `<div class="sub-row">
           <button class="queue-pick ${operation ? "chosen" : ""} ${selected === name ? "active" : ""}" data-sub-player="${esc(name)}"
             data-assigned="${Boolean(position)}" ${canPick ? "" : "disabled"}
@@ -1694,7 +1747,7 @@
             <small class="${selected === name ? "picker-status" : ""}">${selected === name ? "NOW PICKING" :
               position ? `Pending · for ${esc(out || "open spot")}` :
               state.notReady.has(name) ? "Waiting · not choosing" :
-              picked.length >= groupSize() ? "Next group" : "Tap to choose a position"}</small></button>
+              !eligible || picked.length >= groupSize() ? "Next group" : "Tap to choose a position"}</small></button>
           ${!operation ? `<button class="quiet" data-ready="${esc(name)}">${state.notReady.has(name) ? "Ready" : "Wait"}</button>` : ""}
           ${operation ? `<button class="remove-choice" data-remove-sub="${esc(name)}"
             aria-label="Cancel ${esc(name)}'s substitution">×</button>` : ""}
@@ -2156,6 +2209,7 @@
       const kind = state.draft.kind;
       rememberChange();
       recordBenchTurns(lineup, kind === "starting");
+      recordBenchGroups(lineup, kind === "starting" || kind === "halftime");
       state.assignments = lineup.assignments;
       state.fieldQueue = lineup.fieldQueue;
       state.benchQueue = lineup.benchQueue;
@@ -2248,7 +2302,8 @@
         const name = element.dataset.subPlayer, lineup = preview();
         if (!state.draft.base.benchQueue.includes(name) || state.notReady.has(name) ||
             (!lineup.fieldQueue.includes(name) &&
-              (!lineup.benchQueue.includes(name) || chosenEntrants().length >= groupSize()))) return;
+              (!eligibleBench().includes(name) || !lineup.benchQueue.includes(name) ||
+                chosenEntrants().length >= groupSize()))) return;
         const selectedAgain = selectedPlayer(lineup) === name;
         state.selected = selectedAgain ? null : name;
         state.draft.selectionPaused = selectedAgain;
@@ -2467,6 +2522,7 @@
         state.subsPerPlan = previous.subsPerPlan ?? null;
         state.extraSubChoices = previous.extraSubChoices ?? 0;
         state.benchTurns = previous.benchTurns ? { ...previous.benchTurns } : null;
+        state.benchGroups = previous.benchGroups ? previous.benchGroups.map((group) => [...group]) : null;
         state.gameStarted = previous.gameStarted; state.events = previous.events;
         if (previous.positionLayout) {
           positions = previous.positionLayout;
